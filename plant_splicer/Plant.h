@@ -29,11 +29,11 @@ public:
 	BranchData data;
 	int step = 0;
 
-	void InitBranch(int genome0, BranchGenome allGenomes[], Vector createPoint, BranchData bdata = BranchData(), bool isFirstBranch = true, int branchLayerNew = 0)
+	void InitBranch(int genome0, BranchGenome allGenomes[], Vector createPoint, const BranchData& bdata = BranchData(), bool isFirstBranch = true, int branchLayerNew = 0)
 	{
 		data.pos = createPoint;
 		data.genomeIndex = genome0;
-		BranchGenome genome = allGenomes[data.genomeIndex];
+		BranchGenome& genome = allGenomes[data.genomeIndex];
 		data.setLength = genome.length + (genome.lengthVariation * (((rand() % 201) - 100) / 100.0f));
 		data.branchingPoints[0] = floor(genome.branch0Position * data.setLength);
 		data.branchingPoints[1] = floor(genome.branch1Position * data.setLength);
@@ -80,9 +80,15 @@ public:
 
 	}
 
-	bool UpdateData(BranchGenome allGenome[])
+	bool* UpdateData(BranchGenome allGenome[])
 	{
-		BranchGenome genome = allGenome[data.genomeIndex];
+		bool branchesExistArray[3];
+
+		branchesExistArray[0] = false;
+		branchesExistArray[1] = false;
+		branchesExistArray[2] = false;
+
+		BranchGenome& genome = allGenome[data.genomeIndex];
 		data.dir += (genome.dirChange + ((((rand() % 201) - 100) / 100.0f) * genome.randTurn)) * ((data.dirPositive * 2) - 1);
 		Vector v = { 0, -1 };
 		data.pos += v.rotateNew(data.dir);
@@ -92,32 +98,49 @@ public:
 		{
 			if (step == data.branchingPoints[0])
 			{
-				step++;
-				std::cout << data.pos.y << "\n";
-				return true;
+				if(genome.branch0 > -1)
+				{
+					branchesExistArray[0] = true;
+				}
+			}
+			if (step == data.branchingPoints[1])
+			{
+				if (genome.branch1 > -1)
+				{
+					branchesExistArray[1] = true;
+				}
+			}
+			if (step == data.branchingPoints[2])
+			{
+				if (genome.branch2 > -1)
+				{
+					branchesExistArray[2] = true;
+				}
 			}
 		}
 		step++;
-		return false;
+		return branchesExistArray;
 	}
 
-	BranchData RenderWholeBranch(sf::RenderWindow* window, BranchGenome allGenome[])
+	void RenderWholeBranch(sf::RenderWindow* window, BranchGenome allGenome[], BranchData* dataToReturn[])
 	{
-		BranchData dataToReturn;
 		for (int i = 0; i < data.setLength; i++)
 		{
 			DrawBranch(window);
-			if (UpdateData(allGenome) == true)
+			bool vals[3] = { UpdateData(allGenome) };
+			for (int j = 0; j < 3; j++)
 			{
-				dataToReturn = data;
+				if (vals[j] == true)
+				{
+					*dataToReturn[j] = data;
+				}
 			}
 		}
-		return dataToReturn;
 	}
 
 	void Reset(Vector origin, BranchGenome allGenome[], bool isFirst = true, BranchData bdata = BranchData())
 	{
-		BranchGenome genome = allGenome[data.genomeIndex];
+		BranchGenome& genome = allGenome[data.genomeIndex];
 		step = 0;
 		data.pos = origin;
 		data.colour = genome.initColour;
@@ -134,12 +157,20 @@ public:
 		}
 	}
 
-	int AcknowledgeChildBranches(int nextIndex, BranchGenome allGenome[])
+	int* AcknowledgeChildBranches(int nextIndex, BranchGenome allGenome[])
 	{
+		int arr[3];
+		arr[0] = -1;
+		arr[1] = -1;
+		arr[2] = -1;
 		data.branchIndexes[numBranches] = nextIndex;
-		numBranches++;
-
-		return allGenome[data.genomeIndex].branch0;
+		if (allGenome[data.genomeIndex].branch0 > -1)
+			arr[0] = allGenome[data.genomeIndex].branch0;
+		if (allGenome[data.genomeIndex].branch1 > -1)
+			arr[1] = allGenome[data.genomeIndex].branch1;
+		if (allGenome[data.genomeIndex].branch2 > -1)
+			arr[2] = allGenome[data.genomeIndex].branch2;
+		return arr;
 	}
 private:
 	int numBranches = 0;
@@ -152,7 +183,7 @@ public:
 	BranchGenome branchGenes[10];
 	FruitGenome fruitGenes[2];
 
-	Branch branches[MAX_BRANCHES];
+	Branch* branches = new Branch[MAX_BRANCHES];
 	int totalBranches = 1;
 
 	void CreatePlant(Vector origin, sf::RenderWindow* window)
@@ -160,21 +191,23 @@ public:
 		int nextAvailibleBranch = 0;
 		for(int i = 0; i < totalBranches; i++)
 		{
-			BranchData out;
+			BranchData* out = new BranchData[3];
 			if(i == 0)
 			{
 				branches[i].InitBranch(0, branchGenes, origin);
 			}
-			out = branches[i].RenderWholeBranch(window, branchGenes);
+			branches[i].RenderWholeBranch(window, branchGenes, &out);
 
-
-			if (out.nonBlank)
+			for (int i = 0; i < 3; i++)
 			{
-				nextAvailibleBranch++;
-				branches[nextAvailibleBranch].InitBranch(branches[i].AcknowledgeChildBranches(nextAvailibleBranch, branchGenes),
-					branchGenes, out.pos, out, false, branches[i].data.branchLayer + 1
-				);
-				totalBranches++;
+				if (out[i].nonBlank)
+				{
+					nextAvailibleBranch++;
+					branches[nextAvailibleBranch].InitBranch(branches[i].AcknowledgeChildBranches(nextAvailibleBranch, branchGenes)[0],
+						branchGenes, out[i].pos, out[i], false, branches[i].data.branchLayer + 1
+					);
+					totalBranches++;
+				}
 			}
 		}
 		window->display();
@@ -185,9 +218,13 @@ public:
 		branches[0].Reset(origin, branchGenes);
 		for(int i = 0; i < totalBranches; i++)
 		{
-			BranchData out = branches[i].RenderWholeBranch(window, branchGenes);
-			if (out.nonBlank)
-				branches[out.branchIndexes[0]].Reset(out.pos, branchGenes, false, out);
+			BranchData* out = new BranchData[3];
+			branches[i].RenderWholeBranch(window, branchGenes, &out);
+			for(int j = 0; j < 3; j++)
+			{
+				if (out[j].nonBlank)
+					branches[out[j].branchIndexes[0]].Reset(out[j].pos, branchGenes, false, out[j]);
+			}
 		}
 	}
 };
