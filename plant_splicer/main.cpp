@@ -17,9 +17,12 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				window.clear();
+				plant.RenderPlant({ 400, 500 }, &(window));
+				window.display();
+			}
 		}
-		window.clear();
-		plant.RenderPlant({ 400, 500 }, &(window));
-		window.display();
 	}
 }

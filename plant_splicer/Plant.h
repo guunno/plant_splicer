@@ -4,105 +4,135 @@
 
 #define min(a, b) a < b ? a : b
 
+const int MAX_BRANCHES = 1000;
+
+struct BranchData
+{
+public:
+	Vector pos = { 0, 0 };
+	float dir = 0;
+	float size = 25;
+	sf::Color colour = {0, 0, 0};
+	int setLength = 2;
+	int branchingPoints[3];
+	int branchIndexes[3];
+	int numBranches = 0;;
+	int branchLayer = 0;
+	int genomeIndex = 0;
+	bool dirPositive = 0;
+	bool nonBlank = false;
+};
+
 class Branch
 {
 public:
-	Vector currentPos;
-	float currentDir;
-	float currentSize;
-	sf::Color currentColour;
-	int setLength;
-	int branchingPoints[3];
+	BranchData data;
 	int step = 0;
-	int branchLayer = 0;
-	int genomeIndex;
 
-	void InitBranch(int genome0, BranchGenome* allGenomes[], Vector createPoint, Branch* lastBranch = nullptr, bool isFirstBranch = true, int branchLayer = 0)
+	void InitBranch(int genome0, BranchGenome allGenomes[], Vector createPoint, Branch* lastBranch = nullptr, bool isFirstBranch = true, int branchLayerNew = 0)
 	{
-		currentPos = createPoint;
-		genomeIndex = genome0;
-		BranchGenome* genome = allGenomes[genomeIndex];
-
-		setLength = genome->length + (genome->lengthVariation * (((rand() % 201) - 100) / 100.0f));
-		branchingPoints[0] = floor(genome->branch0Position * setLength);
-		branchingPoints[1] = floor(genome->branch1Position * setLength);
-		branchingPoints[2] = floor(genome->branch2Position * setLength);
+		data.pos = createPoint;
+		data.genomeIndex = genome0;
+		BranchGenome genome = allGenomes[data.genomeIndex];
+		data.setLength = genome.length + (genome.lengthVariation * (((rand() % 201) - 100) / 100.0f));
+		data.branchingPoints[0] = floor(genome.branch0Position * data.setLength);
+		data.branchingPoints[1] = floor(genome.branch1Position * data.setLength);
+		data.branchingPoints[2] = floor(genome.branch2Position * data.setLength);
+		data.dirPositive = (rand() % 2);
+		data.nonBlank = true;
+		data.branchLayer = branchLayerNew;
 
 		if (isFirstBranch)
 		{
-			currentDir = genome->initDir;
-			currentColour = genome->initColour;
-			currentSize = genome->initSize;
+			data.dir = genome.initDir;
+			data.colour = genome.initColour;
+			data.size = genome.initSize;
 		}
 		else
 		{
-			currentDir = abs(genome->initDir - lastBranch->currentDir) * genome->dirAdoption + min(genome->initDir, lastBranch->currentDir);
-			currentColour.r = abs(genome->initColour.r - lastBranch->currentColour.r) * genome->colourAdoption + min(genome->initColour.r, lastBranch->currentColour.r);
-			currentColour.g = abs(genome->initColour.g - lastBranch->currentColour.g) * genome->colourAdoption + min(genome->initColour.g, lastBranch->currentColour.g);
-			currentColour.b = abs(genome->initColour.b - lastBranch->currentColour.b) * genome->colourAdoption + min(genome->initColour.b, lastBranch->currentColour.b);
-			currentSize = abs(genome->initSize - lastBranch->currentSize) * genome->sizeAdoption + min(genome->initSize, lastBranch->currentSize);
+			data.dir = abs(genome.initDir - lastBranch->data.dir) * genome.dirAdoption + min(genome.initDir, lastBranch->data.dir);
+			data.colour.r = abs(genome.initColour.r - lastBranch->data.colour.r) * genome.colourAdoption + min(genome.initColour.r, lastBranch->data.colour.r);
+			data.colour.g = abs(genome.initColour.g - lastBranch->data.colour.g) * genome.colourAdoption + min(genome.initColour.g, lastBranch->data.colour.g);
+			data.colour.b = abs(genome.initColour.b - lastBranch->data.colour.b) * genome.colourAdoption + min(genome.initColour.b, lastBranch->data.colour.b);
+			data.size = abs(genome.initSize - lastBranch->data.size) * genome.sizeAdoption + min(genome.initSize, lastBranch->data.size);
 		}
 	}
 
 	void DrawBranch(sf::RenderWindow* window)
 	{
 		sf::CircleShape circle;
-		circle.setFillColor(currentColour);
-		circle.setRadius(currentSize);
-		circle.setPosition({ currentPos.x, currentPos.y });
 
+		//light
+		circle.setFillColor(data.colour + sf::Color(25, 25, 25));
+		circle.setRadius(data.size);
+		circle.setPosition({ data.pos.x - 1, data.pos.y - 1 });
 		window->draw(circle);
+
+		//shadow
+		circle.setFillColor(sf::Color(data.colour.r - 25, data.colour.g - 25, data.colour.b - 25));
+		circle.setPosition({ data.pos.x + 1, data.pos.y + 1 });
+		window->draw(circle);
+
+		//actual
+		circle.setFillColor(data.colour);
+		circle.setPosition({ data.pos.x, data.pos.y });
+		window->draw(circle);
+
 	}
 
-	void UpdateData(BranchGenome* allGenome[])
+	bool UpdateData(BranchGenome allGenome[])
 	{
-		BranchGenome* genome = allGenome[genomeIndex];
-		if(branchLayer < 2)
+		BranchGenome genome = allGenome[data.genomeIndex];
+		data.dir += (genome.dirChange + ((((rand() % 201) - 100) / 100.0f) * genome.randTurn)) * ((data.dirPositive * 2) - 1);
+		Vector v = { 0, -1 };
+		data.pos += v.rotateNew(data.dir);
+		data.colour += genome.colourChange;
+		data.size += genome.sizeChange;
+		if (data.branchLayer < 10)
 		{
-			if (step == branchingPoints[0])
+			if (step == data.branchingPoints[0])
 			{
-				n = new Branch;
-				n->InitBranch(genome->branch0, allGenome, currentPos, this, false, branchLayer + 1);
-				myBranches[numBranches] = n;
-				numBranches++;
-				std::cout <<branchLayer << "\n";
+				step++;
+				std::cout << data.pos.y << "\n";
+				return true;
 			}
 		}
-		currentDir += genome->dirChange + ((((rand() % 201) - 100) / 100.0f)*genome->randTurn);
-		Vector v = { 0, -1 };
-		currentPos += v.rotateNew(currentDir);
-		currentColour += genome->colourChange;
-		currentSize += genome->sizeChange;
 		step++;
+		return false;
 	}
 
-	void RenderWholeBranch(sf::RenderWindow* window, BranchGenome* allGenome[])
+	BranchData RenderWholeBranch(sf::RenderWindow* window, BranchGenome allGenome[])
 	{
-		for (int i = 0; i < setLength; i++)
+		BranchData dataToReturn;
+		for (int i = 0; i < data.setLength; i++)
 		{
 			DrawBranch(window);
-			UpdateData(allGenome);
-			if (numBranches == 0)
+			if (UpdateData(allGenome) == true)
 			{
-				continue;
+				dataToReturn = data;
 			}
-			//myBranches[0]->RenderWholeBranch(window, allGenome);
 		}
+		return dataToReturn;
 	}
 
-	void Reset(Vector origin, BranchGenome* allGenome[])
+	void Reset(Vector origin, BranchGenome allGenome[])
 	{
-		BranchGenome* genome = allGenome[genomeIndex];
+		BranchGenome genome = allGenome[data.genomeIndex];
 		step = 0;
-		currentPos = origin;
-		currentDir = genome->initDir;
-		currentColour = genome->initColour;
-		currentSize = genome->initSize;
+		data.pos = origin;
+		data.dir = genome.initDir;
+		data.colour = genome.initColour;
+		data.size = genome.initSize;
+	}
+
+	int AcknowledgeChildBranches(int nextIndex, BranchGenome allGenome[])
+	{
+		data.branchIndexes[numBranches] = nextIndex;
+		numBranches++;
+
+		return allGenome[data.genomeIndex].branch0;
 	}
 private:
-	Branch* n;
-	Branch* myBranches[3];
-	FruitGenome* plantFruitGenomes[2];
 	int numBranches = 0;
 	Branch* parent = nullptr;
 };
@@ -110,24 +140,43 @@ private:
 class Plant
 {
 public:
-	BranchGenome* branchGenes[10];
+	BranchGenome branchGenes[10];
 	FruitGenome fruitGenes[2];
 
-	Branch test;
+	Branch branches[MAX_BRANCHES];
+	int totalBranches = 1;
+
 	void CreatePlant(Vector origin, sf::RenderWindow* window)
 	{
-		for (int i = 0; i < 10; i++)
+		int nextAvailibleBranch = 0;
+		for(int i = 0; i < totalBranches; i++)
 		{
-			BranchGenome n;
-			branchGenes[i] = &n;
+			BranchData out;
+			if(i == 0)
+			{
+				branches[i].InitBranch(0, branchGenes, origin);
+			}
+			out = branches[i].RenderWholeBranch(window, branchGenes);
+
+
+			if (out.nonBlank)
+			{
+				nextAvailibleBranch++;
+				branches[nextAvailibleBranch].InitBranch(branches[i].AcknowledgeChildBranches(nextAvailibleBranch, branchGenes),
+					branchGenes, out.pos, &branches[i], false, branches[i].data.branchLayer + 1
+				);
+				totalBranches++;
+			}
 		}
-		test.InitBranch(0, branchGenes, origin);
-		test.RenderWholeBranch(window, branchGenes);
+		window->display();
 	}
 
 	void RenderPlant(Vector origin, sf::RenderWindow* window)
 	{
-		test.Reset(origin, branchGenes);
-		test.RenderWholeBranch(window, branchGenes);
+		branches[0].Reset(origin, branchGenes);
+		for(int i = 0; i < totalBranches; i++)
+		{
+			branches[i].RenderWholeBranch(window, branchGenes);
+		}
 	}
 };

@@ -9,12 +9,12 @@ public:
 	float initDir = 0; //up
 	sf::Color initColour{105, 105, 105};
 	float initSize = 5; //pixels
-	int length = 500;
+	int length = 200;
 	int lengthVariation = 120; //length = length +/- variation
 
 
 	// ADOPTION, how similar the colour or size is to the branch it split from
-	float colourAdoption = 0.5;
+	float colourAdoption = 1;
 	float sizeAdoption = 0.5;
 	float dirAdoption = 0.5;
 
@@ -34,8 +34,8 @@ public:
 	// CHANGE VARIABLES
 	sf::Color colourChange{ 1, 0, 1 }; //change in color every step
 	float sizeChange = 0.01; // can be negative
-	float dirChange = 0.001;
-	float randTurn = 0.001; // will change by dirChange and also the random change between -randTurn and positive randTurn
+	float dirChange = .001;
+	float randTurn = 0.01; // will change by dirChange and also the random change between -randTurn and positive randTurn
 
 	bool fruitGene = false;
 };
