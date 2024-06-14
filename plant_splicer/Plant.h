@@ -2,7 +2,7 @@
 #include "Genome.h"
 #include "Vector.h"
 
-#define min(a, b) a < b ? a : b
+#define LERP(a, b, k) a * k + b * (1 - k)
 
 const int MAX_BRANCHES = 1000;
 
@@ -29,7 +29,7 @@ public:
 	BranchData data;
 	int step = 0;
 
-	void InitBranch(int genome0, BranchGenome allGenomes[], Vector createPoint, Branch* lastBranch = nullptr, bool isFirstBranch = true, int branchLayerNew = 0)
+	void InitBranch(int genome0, BranchGenome allGenomes[], Vector createPoint, BranchData bdata = BranchData(), bool isFirstBranch = true, int branchLayerNew = 0)
 	{
 		data.pos = createPoint;
 		data.genomeIndex = genome0;
@@ -50,11 +50,11 @@ public:
 		}
 		else
 		{
-			data.dir = abs(genome.initDir - lastBranch->data.dir) * genome.dirAdoption + min(genome.initDir, lastBranch->data.dir);
-			data.colour.r = abs(genome.initColour.r - lastBranch->data.colour.r) * genome.colourAdoption + min(genome.initColour.r, lastBranch->data.colour.r);
-			data.colour.g = abs(genome.initColour.g - lastBranch->data.colour.g) * genome.colourAdoption + min(genome.initColour.g, lastBranch->data.colour.g);
-			data.colour.b = abs(genome.initColour.b - lastBranch->data.colour.b) * genome.colourAdoption + min(genome.initColour.b, lastBranch->data.colour.b);
-			data.size = abs(genome.initSize - lastBranch->data.size) * genome.sizeAdoption + min(genome.initSize, lastBranch->data.size);
+			data.dir = LERP(genome.initDir, bdata.dir, genome.dirAdoption);
+			data.colour.r = LERP(genome.initColour.r, bdata.colour.r, genome.colourAdoption);
+			data.colour.g = LERP(genome.initColour.g, bdata.colour.g, genome.colourAdoption);
+			data.colour.b = LERP(genome.initColour.b, bdata.colour.b, genome.colourAdoption);
+			data.size = LERP(genome.initSize, bdata.size, genome.sizeAdoption);
 		}
 	}
 
@@ -115,14 +115,23 @@ public:
 		return dataToReturn;
 	}
 
-	void Reset(Vector origin, BranchGenome allGenome[])
+	void Reset(Vector origin, BranchGenome allGenome[], bool isFirst = true, BranchData bdata = BranchData())
 	{
 		BranchGenome genome = allGenome[data.genomeIndex];
 		step = 0;
 		data.pos = origin;
-		data.dir = genome.initDir;
 		data.colour = genome.initColour;
+		data.dir = genome.initDir;
 		data.size = genome.initSize;
+
+		if (!isFirst)
+		{
+			data.dir = LERP(genome.initDir, bdata.dir, genome.dirAdoption);
+			data.colour.r = LERP(genome.initColour.r, bdata.colour.r, genome.colourAdoption);
+			data.colour.g = LERP(genome.initColour.g, bdata.colour.g, genome.colourAdoption);
+			data.colour.b = LERP(genome.initColour.b, bdata.colour.b, genome.colourAdoption);
+			data.size = LERP(genome.initSize, bdata.size, genome.sizeAdoption);
+		}
 	}
 
 	int AcknowledgeChildBranches(int nextIndex, BranchGenome allGenome[])
@@ -163,7 +172,7 @@ public:
 			{
 				nextAvailibleBranch++;
 				branches[nextAvailibleBranch].InitBranch(branches[i].AcknowledgeChildBranches(nextAvailibleBranch, branchGenes),
-					branchGenes, out.pos, &branches[i], false, branches[i].data.branchLayer + 1
+					branchGenes, out.pos, out, false, branches[i].data.branchLayer + 1
 				);
 				totalBranches++;
 			}
@@ -176,7 +185,9 @@ public:
 		branches[0].Reset(origin, branchGenes);
 		for(int i = 0; i < totalBranches; i++)
 		{
-			branches[i].RenderWholeBranch(window, branchGenes);
+			BranchData out = branches[i].RenderWholeBranch(window, branchGenes);
+			if (out.nonBlank)
+				branches[out.branchIndexes[0]].Reset(out.pos, branchGenes, false, out);
 		}
 	}
 };
