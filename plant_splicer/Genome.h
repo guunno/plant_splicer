@@ -20,8 +20,8 @@ public:
 
 	// BRANCH GENETICS;
 	int branch0 = 0;
-	int branch1 = 0; // This is the genome of the branch it links to (0> = none, 1-10 = a branch gene, 11/12 = fruit gene)
-	int branch2 = 0;
+	int branch1 = -1; // This is the genome of the branch it links to (0> = none, 1-10 = a branch gene, 11/12 = fruit gene)
+	int branch2 = -1;
 
 	float branch0Position = 0.999;
 	float branch1Position = 0.5; // Where along the current branch the new branch stems from
