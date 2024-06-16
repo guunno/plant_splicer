@@ -17,15 +17,9 @@ struct Genome
 	float dirAdoption = 0.5f;
 
 	// BRANCH GENETICS;
-<<<<<<< HEAD
 	int branch0 = 1;
 	int branch1 = 2; // This is the genome of the branch it links to (0> = none, 1-10 = a branch gene, 11/12 = fruit gene)
 	int branch2 = 3;
-=======
-	int branch0 = -1;
-	int branch1 = -1; // This is the genome of the branch it links to (0> = none, 1-10 = a branch gene, 11/12 = fruit gene)
-	int branch2 = -1;
->>>>>>> c65ac904064fafc087ec191c9bfcfd3a9b924d48
 
 	float branch0Position = 0.25f;
 	float branch1Position = 0.5f; // Where along the current branch the new branch stems from
@@ -35,13 +29,9 @@ struct Genome
 struct BranchGenome : Genome
 {
 	// CHANGE VARIABLES
-<<<<<<< HEAD
 	sf::Color colourChange{ 1, 0, 2 }; //change in color every step
 	float widthChange = -0.001f; // can be negative
-=======
-	sf::Color colourChange{ 2, 1, 1 }; //change in color every step
-	float widthChange = -0.002f; // can be negative
->>>>>>> c65ac904064fafc087ec191c9bfcfd3a9b924d48
+
 	float dirChange = 0.002f;
 	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn
 
