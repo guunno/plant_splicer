@@ -8,12 +8,7 @@ int main()
 	sf::Event event;
 	Vector2 move(1, 0);
 
-#if OG_CODE
-	Plant plant;
-	plant.CreatePlant({ 400, 600 }, &window);
-#else
 	Plant plant(Vector2(400.0f, 600.0f), &window);
-#endif
 
 	while (window.isOpen())
 	{

@@ -1,5 +1,7 @@
 #include "Plant.h"
 
+#define MAX_RECUSION_DEPTH 2
+
 Branch::Branch(BranchGenome& genomeData, Branch* parentBranch, int branchLayer)
 {
 	Create(genomeData, parentBranch, branchLayer);
@@ -17,7 +19,9 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 	data.branchingPoints[1] = (int)floor(genomeData.branch1Position * data.length);
 	data.branchingPoints[2] = (int)floor(genomeData.branch2Position * data.length);
 
+	data.randomTurn = genomeData.randTurn;
 	data.isDirPositive = rand() % 2;
+	std::cout << data.isDirPositive << "a\n";
 	data.branchLayer = branchLayer;
 
 	data.dirChange = genomeData.dirChange;
@@ -40,26 +44,39 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 	}
 }
 
-Branch::Orientation Branch::RenderBranch(
+void Branch::RenderBranch(
 	const std::unique_ptr<sf::CircleShape>& circle,
 	sf::RenderWindow* window,
-	const Branch::Orientation& offset = Branch::Orientation()
+	const Branch::Orientation& offset = Branch::Orientation(), 
+	uint32_t recursionDepth
 ) {
-	Vector2 pos = data.pos + offset.pos;
+
+	Vector2 pos = offset.pos;
 	float dir = data.dir + offset.dir;
 	float width = data.width;
-	sf::Color colour = data.colour + offset.colour;
+	sf::Color colour = data.colour;// +offset.colour;
 	for (int i = 0; i < data.length; i++)
 	{
-		dir += data.dirChange;// +float((rand() % 180) * PI / 180.0f) * data.randomTurn * ((int)data.isDirPositive * 2 - 1);
+		// dir += (data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
+		if (data.isDirPositive)
+			dir += data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn);
+		else
+			dir -= data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn);
 		pos += Vector2(0, -1).rotateNew(dir);
-		//std::cout << pos << "\n";
+
+		if (recursionDepth < MAX_RECUSION_DEPTH)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				if (data.branchIndexes[j] && i == data.branchingPoints[j])
+					RenderBranch(circle, window, { pos, dir, colour }, recursionDepth + 1);
+			}
+		}
+
 		width += data.widthChange;
 		colour += data.colourChange;
 		RenderBranchSegment(circle, pos, width, colour, window);
 	}
-	std::cout << "!!! " << pos - offset.pos << "\n";
-	return { pos - offset.pos, dir - offset.dir, colour - offset.colour };
 }
 
 void Branch::RenderBranchSegment(
@@ -68,18 +85,18 @@ void Branch::RenderBranchSegment(
 	sf::RenderWindow* window
 ) {
 	// Light
-	circle->setFillColor(data.colour + sf::Color(25, 25, 25));
+	circle->setFillColor(colour + sf::Color(25, 25, 25));
 	circle->setPosition({ position.x - 1, position.y - 1 });
 	circle->setRadius(data.width);
 	window->draw(*circle);
 
 	// Shadow
-	circle->setFillColor(sf::Color(data.colour.r - 25, data.colour.g - 25, data.colour.b - 25));
+	circle->setFillColor(sf::Color(colour.r - 25, colour.g - 25, colour.b - 25));
 	circle->setPosition({ position.x + 1, position.y + 1 });
 	window->draw(*circle);
 
 	// Actual
-	circle->setFillColor(data.colour);
+	circle->setFillColor(colour);
 	circle->setPosition({ position.x, position.y });
 	window->draw(*circle);
 }
@@ -91,29 +108,18 @@ Plant::Plant(Vector2 pos, sf::RenderWindow* window)
 	InitBranches();
 }
 
-void Plant::Render(uint32_t BranchIndex, const Branch::Orientation& orientation)
+void Plant::Render()
 {
-	Branch::Orientation childOrientations = m_Branches[BranchIndex].RenderBranch(
+	m_Branches[0].RenderBranch(
 		m_BranchRenderShape, window, 
-		{
-			orientation.pos + pos, 
-			orientation.dir,
-			orientation.colour
-		}
+		Branch::Orientation{ pos, 0, sf::Color{0,0,0} }
 	);
-
-	for (int i = 0; i < 3; i++)
-	{
-		uint32_t idx = m_Branches[BranchIndex].childIndices[i];
-		if (idx >  0)
-			Render(idx, childOrientations);
-	}
 }
 
 uint32_t Plant::GetBranchCount(uint32_t genomeIdx, uint8_t recursionDepth)
 {
 	if (genomeIdx > 13) return 0;
-	if (recursionDepth >= 10) return 1;
+	if (recursionDepth >= MAX_RECUSION_DEPTH) return 1;
 
 	return (
 		GetBranchCount(branchGenes[genomeIdx].branch0, recursionDepth + 1) +
@@ -125,13 +131,11 @@ uint32_t Plant::GetBranchCount(uint32_t genomeIdx, uint8_t recursionDepth)
 
 uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth)
 {
-	std::cout << m_Branches.Size() << ": " << m_IntermediateBranchCount << ": " << genomeIdx << "\n";
-
 	uint32_t currentIndex = m_IntermediateBranchCount;
 	m_Branches[currentIndex].Create(branchGenes[genomeIdx], nullptr, 0);
 	m_IntermediateBranchCount++;
 
-	if (recursionDepth >= 10)
+	if (recursionDepth >= MAX_RECUSION_DEPTH)
 		return currentIndex;
 
 	for (int i = 0; i < 3; i++)

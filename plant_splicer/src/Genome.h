@@ -4,7 +4,7 @@
 struct Genome
 {
 	// INITIAL VARIABLES
-	float initDir = 0; //up is 0
+	float initDir = -0.1; //up is 0
 	sf::Color initColour{ 105, 105, 105 };
 	float initWidth = 5; //pixels
 	int length = 200;
@@ -17,11 +17,11 @@ struct Genome
 	float dirAdoption = 0.5f;
 
 	// BRANCH GENETICS;
-	int branch0 = 0;
-	int branch1 = -1; // This is the genome of the branch it links to (0> = none, 1-10 = a branch gene, 11/12 = fruit gene)
-	int branch2 = -1;
+	int branch0 = 1;
+	int branch1 = 2; // This is the genome of the branch it links to (0> = none, 1-10 = a branch gene, 11/12 = fruit gene)
+	int branch2 = 3;
 
-	float branch0Position = 0.999f;
+	float branch0Position = 0.25f;
 	float branch1Position = 0.5f; // Where along the current branch the new branch stems from
 	float branch2Position = 0.75f;
 };
@@ -29,7 +29,7 @@ struct Genome
 struct BranchGenome : Genome
 {
 	// CHANGE VARIABLES
-	sf::Color colourChange{ 2, 1, 1 }; //change in color every step
+	sf::Color colourChange{ 1, 0, 2 }; //change in color every step
 	float widthChange = -0.001f; // can be negative
 	float dirChange = 0.002f;
 	float randTurn = 0.01f; // will change by dirChange and also the random change between -randTurn and positive randTurn
