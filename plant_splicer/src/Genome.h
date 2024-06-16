@@ -12,7 +12,7 @@ struct Genome
 
 
 	// ADOPTION, how similar the colour or size is to the branch it split from
-	float colourAdoption = 0.9f;
+	float colourAdoption = 0.5f;
 	float widthAdoption = 0.2f;
 	float dirAdoption = 0.5f;
 
@@ -30,7 +30,7 @@ struct BranchGenome : Genome
 {
 	// CHANGE VARIABLES
 	sf::Color colourChange{ 1, 0, 2 }; //change in color every step
-	float widthChange = -0.001f; // can be negative
+	float widthChange = -1.0f; // can be negative
 
 	float dirChange = 0.002f;
 	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn

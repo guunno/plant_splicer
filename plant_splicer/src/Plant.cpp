@@ -27,18 +27,17 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 	data.widthChange = genomeData.widthChange;
 	data.colourChange = genomeData.colourChange;
 
+	data.colour = genomeData.initColour;
+	data.colourAdoption = genomeData.colourAdoption;
+
 	if (parentBranch)
 	{
 		data.dir = LERP(genomeData.initDir, parentBranch->data.dir, genomeData.dirAdoption);
-		data.colour.r = LERP(genomeData.initColour.r, parentBranch->data.colour.r, genomeData.colourAdoption);
-		data.colour.g = LERP(genomeData.initColour.g, parentBranch->data.colour.g, genomeData.colourAdoption);
-		data.colour.b = LERP(genomeData.initColour.b, parentBranch->data.colour.b, genomeData.colourAdoption);
 		data.width = LERP(genomeData.initWidth, parentBranch->data.width, genomeData.widthAdoption);
 	}
 	else
 	{
 		data.dir = genomeData.initDir;
-		data.colour = genomeData.initColour;
 		data.width = genomeData.initWidth;
 	}
 }
@@ -49,19 +48,21 @@ void Branch::RenderBranch(
 	const Branch::Orientation& offset = Branch::Orientation(), 
 	uint32_t recursionDepth
 ) {
-
 	Vector2 pos = offset.pos;
 	float dir = data.dir + offset.dir;
 	float width = data.width;
-	sf::Color colour = data.colour;// +offset.colour;
+	sf::Color colour = data.colour + sf::Color{
+		(uint8_t)floor(offset.colour.r * data.colourAdoption), 
+		(uint8_t)floor(offset.colour.g * data.colourAdoption), 
+		(uint8_t)floor(offset.colour.b * data.colourAdoption)
+	};
+
 	for (int i = 0; i < data.length; i++)
 	{
-		if (data.isDirPositive)
-			dir += data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn);
-		else
-			dir -= data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn);
-		// dir += (data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
+		dir += (data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
 		pos += Vector2(0, -1).rotateNew(dir);
+		width += data.widthChange;
+		colour += data.colourChange;
 
 		if (recursionDepth < MAX_RECUSION_DEPTH)
 		{
@@ -71,9 +72,6 @@ void Branch::RenderBranch(
 					RenderBranch(circle, window, { pos, dir, colour }, recursionDepth + 1);
 			}
 		}
-
-		width += data.widthChange;
-		colour += data.colourChange;
 		RenderBranchSegment(circle, pos, width, colour, window);
 	}
 }

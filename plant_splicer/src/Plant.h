@@ -23,6 +23,7 @@ struct BranchData
 	sf::Color colourChange {0, 0, 0}; // Amount Colour changes each step
 	float dirChange = 0; // Amount branch rotates each step
 	float randomTurn = 0; // Variable amount branch rotates each step
+	float colourAdoption = 0; // How much colour is inherited from the point it splits up from
 
 	float dir = 0; // Direction of Branch
 	float width = 25; // Width of Branch
