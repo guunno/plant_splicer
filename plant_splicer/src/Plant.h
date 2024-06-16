@@ -40,7 +40,7 @@ public:
 	{
 		Vector2 pos{ 0, 0 }; // Position of Branch
 		float dir = 0; // Direction of Branch
-		sf::Color colour{ 0, 0, 0 }; // Coour of Branch
+		sf::Color colour{ 0, 100, 0 }; // Colour of Branch
 	};
 
 public:
