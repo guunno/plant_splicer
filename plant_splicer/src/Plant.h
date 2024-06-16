@@ -36,6 +36,7 @@ public:
 	{
 		Vector2 pos{ 0, 0 }; // Position of Branch
 		float dir = 0; // Direction of Branch
+<<<<<<< HEAD
 		sf::Color colour{ 0, 0, 0 }; // Colour of Branch
 
 		inline Orientation operator* (float sf) {
@@ -45,6 +46,9 @@ public:
 				sf::Color { (uint8_t)floor(colour.r * sf), (uint8_t)floor(colour.r * sf), (uint8_t)floor(colour.r * sf) }
 			};
 		}
+=======
+		sf::Color colour{ 0, 100, 0 }; // Colour of Branch
+>>>>>>> c65ac904064fafc087ec191c9bfcfd3a9b924d48
 	};
 
 public:

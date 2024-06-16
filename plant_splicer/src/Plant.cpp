@@ -24,6 +24,8 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 	std::cout << data.isDirPositive << "a\n";
 	data.branchLayer = branchLayer;
 
+	data.randomTurn = genomeData.randTurn;
+
 	data.dirChange = genomeData.dirChange;
 	data.widthChange = genomeData.widthChange;
 	data.colourChange = genomeData.colourChange;
@@ -54,6 +56,7 @@ void Branch::RenderBranch(
 	Vector2 pos = offset.pos;
 	float dir = data.dir + offset.dir;
 	float width = data.width;
+<<<<<<< HEAD
 	sf::Color colour = data.colour;// +offset.colour;
 	for (int i = 0; i < data.length; i++)
 	{
@@ -73,10 +76,22 @@ void Branch::RenderBranch(
 			}
 		}
 
+=======
+	sf::Color colour = data.colour;
+
+	for (int i = 0; i < data.length; i++)
+	{
+		dir += (data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
+		pos += Vector2(0, -1).rotateNew(dir);
+>>>>>>> c65ac904064fafc087ec191c9bfcfd3a9b924d48
 		width += data.widthChange;
 		colour += data.colourChange;
 		RenderBranchSegment(circle, pos, width, colour, window);
 	}
+<<<<<<< HEAD
+=======
+	return { pos - offset.pos, dir - offset.dir, colour - offset.colour };
+>>>>>>> c65ac904064fafc087ec191c9bfcfd3a9b924d48
 }
 
 void Branch::RenderBranchSegment(
@@ -87,7 +102,7 @@ void Branch::RenderBranchSegment(
 	// Light
 	circle->setFillColor(colour + sf::Color(25, 25, 25));
 	circle->setPosition({ position.x - 1, position.y - 1 });
-	circle->setRadius(data.width);
+	circle->setRadius(width);
 	window->draw(*circle);
 
 	// Shadow

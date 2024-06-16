@@ -23,12 +23,5 @@ int main()
 				window.display();
 			}
 		}
-
-		/*
-		window.clear();
-		plant.RenderPlant({ 400, 500 }, &(window));
-		window.display();
-		*/
-
 	}
 }
