@@ -20,7 +20,7 @@ struct BranchData
 	bool isDirPositive = 0; // Direction is Left or Right
 	
 	float widthChange = 0; // Amount Width changes each step
-	floatColour colourChange {0, 0, 0}; // Amount Colour changes each step
+	FloatColour colourChange {0, 0, 0}; // Amount Colour changes each step
 	float dirChange = 0; // Amount branch rotates each step
 	float randomTurn = 0; // Variable amount branch rotates each step
 	float colourAdoption = 0; // How much colour is inherited from the point it splits up from
@@ -28,7 +28,7 @@ struct BranchData
 
 	float dir = 0; // Direction of Branch
 	float width = 25; // Width of Branch
-	floatColour colour { 0, 0, 0 }; // Coour of Branch
+	FloatColour colour { 0, 0, 0 }; // Coour of Branch
 };
 
 class Branch
@@ -38,14 +38,14 @@ public:
 	{
 		Vector2 pos{ 0, 0 }; // Position of Branch
 		float dir = 0; // Direction of Branch
-		floatColour colour{ 0, 0, 0 }; // Colour of Branch
+		FloatColour colour{ 0, 0, 0 }; // Colour of Branch
 		float width = 0; // Width of Branch
 
-		inline Orientation operator* (float sf) {
+		inline Orientation operator* (uint8_t sf) {
 			return Orientation{ 
 				pos * sf, 
 				dir * sf, 
-				floatColour { colour.r * sf, colour.r * sf, colour.r * sf },
+				FloatColour { colour.r * sf, colour.r * sf, colour.r * sf },
 				width* sf
 			};
 		}
@@ -62,7 +62,7 @@ public:
 	uint32_t childIndices[3] {0, 0, 0}; // Child Index of 0 would mean no child for that index
 
 private:
-	void RenderBranchSegment(const std::unique_ptr<sf::CircleShape>& circle, Vector2 position, float width, floatColour colour, sf::RenderWindow* window);
+	void RenderBranchSegment(const std::unique_ptr<sf::CircleShape>& circle, Vector2 position, float width, const FloatColour& colour, sf::RenderWindow* window);
 };
 
 class Plant

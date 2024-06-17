@@ -50,10 +50,11 @@ void Branch::RenderBranch(
 	const Branch::Orientation& offset = Branch::Orientation(),
 	uint32_t recursionDepth
 ) {
+	FloatColour colour;
+
 	Vector2 pos = offset.pos;
 	float dir = data.dir + offset.dir;
 	float width = LERP((recursionDepth == 0 ? data.width : offset.width), data.width, data.widthAdoption);
-	floatColour colour;
 	colour.r = floor(LERP((recursionDepth == 0 ? data.colour.r : offset.colour.r), data.colour.r, data.colourAdoption));
 	colour.g = floor(LERP((recursionDepth == 0 ? data.colour.g : offset.colour.g), data.colour.g, data.colourAdoption));
 	colour.b = floor(LERP((recursionDepth == 0 ? data.colour.b : offset.colour.b), data.colour.b, data.colourAdoption));
@@ -79,23 +80,28 @@ void Branch::RenderBranch(
 
 void Branch::RenderBranchSegment(
 	const std::unique_ptr<sf::CircleShape>& circle, 
-	Vector2 position, float width, floatColour colour, 
+	Vector2 position, float width, const FloatColour& colour,
 	sf::RenderWindow* window
 ) {
-	sf::Color sfColour = colour.sfCol();
-	// Light
-	circle->setFillColor(sfColour + sf::Color(25, 25, 25, 100));
-	circle->setPosition({ position.x - 1, position.y - 1 });
 	circle->setRadius(width);
+
+	// Light
+	circle->setFillColor(colour + FloatColour{ 25, 25, 25, 100 });
+	circle->setPosition({ position.x - 1, position.y - 1 });
 	window->draw(*circle);
 
 	// Shadow
-	circle->setFillColor(sf::Color(floor(abs(sfColour.r - 25) + (sfColour.r - 25)), floor(abs(sfColour.g - 25) + (sfColour.g - 25)), floor(abs(sfColour.b - 25) + (sfColour.b - 25)), 100));
+	circle->setFillColor(FloatColour(
+		abs(colour.r - 25) + (colour.r - 25), 
+		abs(colour.g - 25) + (colour.g - 25), 
+		abs(colour.b - 25) + (colour.b - 25),
+		100
+	));
 	circle->setPosition({ position.x + 1, position.y + 1 });
 	window->draw(*circle);
 
 	// Actual
-	circle->setFillColor(sfColour);
+	circle->setFillColor(colour);
 	circle->setPosition({ position.x, position.y });
 	window->draw(*circle);
 }
@@ -111,7 +117,7 @@ void Plant::Render()
 {
 	m_Branches[0].RenderBranch(
 		m_BranchRenderShape, window, 
-		Branch::Orientation{ pos, 0, floatColour{0, 0, 0} }
+		Branch::Orientation { pos, 0, FloatColour{ 0, 0, 0 } }
 	);
 }
 

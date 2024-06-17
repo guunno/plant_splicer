@@ -2,43 +2,40 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
 
-struct floatColour
+#define min_value(a, b) a < b ? a : b
+
+struct FloatColour
 {
 	float r = 0.0f;
 	float g = 0.0f;
 	float b = 0.0f;
+	float a = 0.0f;
 
-	floatColour max()
-	{
-		floatColour n = floatColour{
-			r > 255.0f ? 255.0f : r,
-			g > 255.0f ? 255.0f : g,
-			b > 255.0f ? 255.0f : b,
-		};
-		return n;
-	}
+	FloatColour() {}
+	FloatColour(float r, float g, float b, float a = 255.0f) :r(r), g(g), b(b), a(a) {}
+	FloatColour(const sf::Color& colour) :r(colour.r), g(colour.g), b(colour.b), a(colour.a) {}
 
-	sf::Color sfCol()
+	operator sf::Color() const
 	{
-		sf::Color a = sf::Color(uint8_t(r) , uint8_t(g) , uint8_t(b) );
-		return a;
+		//return sf::Color { uint8_t(r), uint8_t(g), uint8_t(b) };
+		return sf::Color { uint8_t(min_value(r, 255)), uint8_t(min_value(g, 255)), uint8_t(min_value(b, 255)) };
 	}
 
-	floatColour operator- (floatColour o)
+	FloatColour operator-(const FloatColour& o) const
 	{
-		return { this->r - o.r, this->g - o.g, this->b - o.b };
+		return FloatColour { this->r - o.r, this->g - o.g, this->b - o.b };
 	}
-	floatColour operator+ (floatColour o)
+	FloatColour operator+(const FloatColour& o) const
 	{
-		return { this->r + o.r, this->g + o.g, this->b + o.b };
+		return FloatColour { this->r + o.r, this->g + o.g, this->b + o.b };
 	}
-	void operator+= (floatColour o)
+	void operator+=(const FloatColour& o)
 	{
 		this->r += o.r;
 		this->g += o.g;
 		this->b += o.b;
 	}
-	void operator-= (floatColour o)
+	void operator-=(const FloatColour& o)
 	{
 		this->r -= o.r;
 		this->g -= o.g;
@@ -50,9 +47,9 @@ struct Genome
 {
 	// INITIAL VARIABLES
 	float initDir = -0.1; //up is 0
-	floatColour initColour{ 1, 1, 1 };
+	FloatColour initColour{ 1, 1, 1 };
 	float initWidth = 5; //pixels
-	int length = 200;
+	int length = 400;
 	int lengthVariation = 40; //length = length +/- variation
 
 
@@ -74,7 +71,7 @@ struct Genome
 struct BranchGenome : Genome
 {
 	// CHANGE VARIABLES
-	floatColour colourChange{ 1, 1, 1 }; //change in color every step
+	FloatColour colourChange{ 1, 1, 1 }; //change in color every step
 	float widthChange = -0.005f; // can be negative
 
 	float dirChange = 0.002f;
