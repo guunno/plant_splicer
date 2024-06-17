@@ -22,6 +22,16 @@ int main()
 				plant.Render();
 				window.display();
 			}
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::E)
+				{
+					sf::Texture scr;
+					scr.create(window.getSize().x, window.getSize().y);
+					scr.update(window);
+					scr.copyToImage().saveToFile("plant.png");
+				}
+			}
 		}
 	}
 }

@@ -45,15 +45,15 @@ struct FloatColour
 struct Genome
 {
 	// INITIAL VARIABLES
-	float initDir = -0.1f; //up is 0
-	FloatColour initColour{ 1, 1, 1 };
-	float initWidth = 5; //pixels
+	float initDir = 0.0f; //up is 0
+	FloatColour initColour{ 60, 30, 0 };
+	float initWidth = 12; //pixels
 	int length = 200;
 	int lengthVariation = 40; //length = length +/- variation
 
 
 	// ADOPTION, how similar the colour or size is to the branch it split from
-	float colourAdoption = 0.0f;
+	float colourAdoption = 1.0f;
 	float widthAdoption = 1.0f;
 	float dirAdoption = 0.0f;
 
@@ -64,16 +64,16 @@ struct Genome
 
 	float branch0Position = 0.5f;
 	float branch1Position = 0.75f; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
-	float branch2Position = 0.99f;
+	float branch2Position = 0.999999999f;
 };
 
 struct BranchGenome : Genome
 {
 	// CHANGE VARIABLES
-	FloatColour colourChange{ 1, 1, 1 }; //change in color every step
-	float widthChange = -0.005f; // can be negative
+	FloatColour colourChange{ 0.5, 0.2, 0.1 }; //change in color every step
+	float widthChange = -0.016f; // can be negative
 
-	float dirChange = 0.002f;
+	float dirChange = 0.003f;
 	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn
 
 	bool fruitGene = false;

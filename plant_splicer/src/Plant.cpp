@@ -15,9 +15,9 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 	data.branchIndexes[1] = genomeData.branch1;
 	data.branchIndexes[2] = genomeData.branch2;
 
-	data.branchingPoints[0] = (int)floor(genomeData.branch0Position * data.length);
-	data.branchingPoints[1] = (int)floor(genomeData.branch1Position * data.length);
-	data.branchingPoints[2] = (int)floor(genomeData.branch2Position * data.length);
+	data.branchingPoints[0] = (int)floor(genomeData.branch0Position * data.length) - 1;
+	data.branchingPoints[1] = (int)floor(genomeData.branch1Position * data.length) - 1;
+	data.branchingPoints[2] = (int)floor(genomeData.branch2Position * data.length) - 1;
 
 	data.randomTurn = genomeData.randTurn;
 	data.isDirPositive = rand() % 2;
@@ -67,6 +67,8 @@ void Branch::RenderBranch(
 		width += data.widthChange;
 		colour += data.colourChange;
 
+		RenderBranchSegment(circle, pos, width, colour, window);
+
 		if (recursionDepth < MAX_RECUSION_DEPTH)
 		{
 			for (int j = 0; j < 3; j++)
@@ -76,7 +78,6 @@ void Branch::RenderBranch(
 			}
 		}
 
-		RenderBranchSegment(circle, pos, width, colour, window);
 	}
 }
 
