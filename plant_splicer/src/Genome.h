@@ -17,7 +17,6 @@ struct FloatColour
 
 	operator sf::Color() const
 	{
-		//return sf::Color { uint8_t(r), uint8_t(g), uint8_t(b) };
 		return sf::Color { uint8_t(min_value(r, 255)), uint8_t(min_value(g, 255)), uint8_t(min_value(b, 255)) };
 	}
 
@@ -46,10 +45,10 @@ struct FloatColour
 struct Genome
 {
 	// INITIAL VARIABLES
-	float initDir = -0.1; //up is 0
+	float initDir = -0.1f; //up is 0
 	FloatColour initColour{ 1, 1, 1 };
 	float initWidth = 5; //pixels
-	int length = 400;
+	int length = 200;
 	int lengthVariation = 40; //length = length +/- variation
 
 
@@ -59,13 +58,13 @@ struct Genome
 	float dirAdoption = 0.0f;
 
 	// BRANCH GENETICS;
-	int branch0 = -1;
-	int branch1 = -1; // This is the genome of the branch it links to (< 0 = no branch, 1-10 = a branch gene, 11/12 = fruit gene)
-	int branch2 = -1;
+	int branch0 = 1;
+	int branch1 = 2; // This is the genome of the branch it links to (< 0 = no branch, 1-10 = a branch gene, 11/12 = fruit gene)
+	int branch2 = 3;
 
-	float branch0Position = 0.99f;
-	float branch1Position = 0.5f; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
-	float branch2Position = 0.75f;
+	float branch0Position = 0.5f;
+	float branch1Position = 0.75f; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
+	float branch2Position = 0.99f;
 };
 
 struct BranchGenome : Genome

@@ -8,7 +8,7 @@ int main()
 	sf::Event event;
 	Vector2 move(1, 0);
 
-	Plant plant(Vector2(400.0f, 600.0f), &window);
+	Plant plant(Vector2(400.0f, 800.0f), &window);
 
 	while (window.isOpen())
 	{

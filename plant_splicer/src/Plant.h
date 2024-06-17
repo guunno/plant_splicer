@@ -55,14 +55,14 @@ public:
 	Branch() {}
 	Branch(BranchGenome& genomeData, Branch* parentBranch = nullptr, int branchLayer = 0);
 	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr, int branchLayer = 0);
-	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, sf::RenderWindow* window, const Branch::Orientation& offset, uint32_t recursionDepth = 0);
+	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, sf::RenderWindow* window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, uint32_t recursionDepth = 0) const;
 
 public:
 	BranchData data;
 	uint32_t childIndices[3] {0, 0, 0}; // Child Index of 0 would mean no child for that index
 
 private:
-	void RenderBranchSegment(const std::unique_ptr<sf::CircleShape>& circle, Vector2 position, float width, const FloatColour& colour, sf::RenderWindow* window);
+	void RenderBranchSegment(const std::unique_ptr<sf::CircleShape>& circle, Vector2 position, float width, const FloatColour& colour, sf::RenderWindow* window) const;
 };
 
 class Plant

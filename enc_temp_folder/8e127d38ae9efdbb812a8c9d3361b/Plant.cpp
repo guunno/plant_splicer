@@ -75,7 +75,6 @@ void Branch::RenderBranch(
 					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, recursionDepth + 1);
 			}
 		}
-
 		RenderBranchSegment(circle, pos, width, colour, window);
 	}
 }
