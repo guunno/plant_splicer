@@ -30,6 +30,8 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 	data.colour = genomeData.initColour;
 	data.colourAdoption = genomeData.colourAdoption;
 
+	data.widthAdoption = genomeData.widthAdoption;
+
 	if (parentBranch)
 	{
 		data.dir = LERP(genomeData.initDir, parentBranch->data.dir, genomeData.dirAdoption);
@@ -45,17 +47,16 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int branchLa
 void Branch::RenderBranch(
 	const std::unique_ptr<sf::CircleShape>& circle,
 	sf::RenderWindow* window,
-	const Branch::Orientation& offset = Branch::Orientation(), 
+	const Branch::Orientation& offset = Branch::Orientation(),
 	uint32_t recursionDepth
 ) {
 	Vector2 pos = offset.pos;
 	float dir = data.dir + offset.dir;
-	float width = data.width;
-	sf::Color colour = data.colour + sf::Color{
-		(uint8_t)floor(offset.colour.r * data.colourAdoption), 
-		(uint8_t)floor(offset.colour.g * data.colourAdoption), 
-		(uint8_t)floor(offset.colour.b * data.colourAdoption)
-	};
+	float width = LERP((recursionDepth == 0 ? data.width : offset.width), data.width, data.widthAdoption);
+	floatColour colour;
+	colour.r = floor(LERP((recursionDepth == 0 ? data.colour.r : offset.colour.r), data.colour.r, data.colourAdoption));
+	colour.g = floor(LERP((recursionDepth == 0 ? data.colour.g : offset.colour.g), data.colour.g, data.colourAdoption));
+	colour.b = floor(LERP((recursionDepth == 0 ? data.colour.b : offset.colour.b), data.colour.b, data.colourAdoption));
 
 	for (int i = 0; i < data.length; i++)
 	{
@@ -68,8 +69,8 @@ void Branch::RenderBranch(
 		{
 			for (int j = 0; j < 3; j++)
 			{
-				if (data.branchIndexes[j] && i == data.branchingPoints[j])
-					RenderBranch(circle, window, { pos, dir, colour }, recursionDepth + 1);
+				if (data.branchIndexes[j] && i == data.branchingPoints[j] && data.branchIndexes[j] >= 0)
+					RenderBranch(circle, window, { pos, dir, colour, width }, recursionDepth + 1);
 			}
 		}
 		RenderBranchSegment(circle, pos, width, colour, window);
@@ -78,22 +79,23 @@ void Branch::RenderBranch(
 
 void Branch::RenderBranchSegment(
 	const std::unique_ptr<sf::CircleShape>& circle, 
-	Vector2 position, float width, sf::Color colour, 
+	Vector2 position, float width, floatColour colour, 
 	sf::RenderWindow* window
 ) {
+	sf::Color sfColour = colour.sfCol();
 	// Light
-	circle->setFillColor(colour + sf::Color(25, 25, 25));
+	circle->setFillColor(sfColour + sf::Color(25, 25, 25, 100));
 	circle->setPosition({ position.x - 1, position.y - 1 });
-	circle->setRadius(data.width);
+	circle->setRadius(width);
 	window->draw(*circle);
 
 	// Shadow
-	circle->setFillColor(sf::Color(colour.r - 25, colour.g - 25, colour.b - 25));
+	circle->setFillColor(sf::Color(floor(abs(sfColour.r - 25) + (sfColour.r - 25)), floor(abs(sfColour.g - 25) + (sfColour.g - 25)), floor(abs(sfColour.b - 25) + (sfColour.b - 25)), 100));
 	circle->setPosition({ position.x + 1, position.y + 1 });
 	window->draw(*circle);
 
 	// Actual
-	circle->setFillColor(colour);
+	circle->setFillColor(sfColour);
 	circle->setPosition({ position.x, position.y });
 	window->draw(*circle);
 }
@@ -109,7 +111,7 @@ void Plant::Render()
 {
 	m_Branches[0].RenderBranch(
 		m_BranchRenderShape, window, 
-		Branch::Orientation{ pos, 0, sf::Color{0,0,0} }
+		Branch::Orientation{ pos, 0, floatColour{0, 0, 0} }
 	);
 }
 
