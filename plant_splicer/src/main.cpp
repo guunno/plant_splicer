@@ -16,12 +16,7 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			if (event.type == sf::Event::MouseButtonPressed)
-			{
-				window.clear();
-				plant.Render();
-				window.display();
-			}
+
 			if (event.type == sf::Event::KeyPressed)
 			{
 				if (event.key.code == sf::Keyboard::E)
@@ -31,6 +26,13 @@ int main()
 					scr.update(window);
 					scr.copyToImage().saveToFile("plant.png");
 				}
+			}
+
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				window.clear();
+				plant.Render();
+				window.display();
 			}
 		}
 	}

@@ -48,7 +48,7 @@ struct Genome
 	float initDir = 0.0f; //up is 0
 	FloatColour initColour{ 60, 30, 0 };
 	float initWidth = 12; //pixels
-	int length = 200;
+	int length = 100;
 	int lengthVariation = 40; //length = length +/- variation
 
 
@@ -56,15 +56,6 @@ struct Genome
 	float colourAdoption = 1.0f;
 	float widthAdoption = 1.0f;
 	float dirAdoption = 0.0f;
-
-	// BRANCH GENETICS;
-	int branch0 = 1;
-	int branch1 = 2; // This is the genome of the branch it links to (< 0 = no branch, 1-10 = a branch gene, 11/12 = fruit gene)
-	int branch2 = 3;
-
-	float branch0Position = 0.5f;
-	float branch1Position = 0.75f; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
-	float branch2Position = 0.999999999f;
 };
 
 struct BranchGenome : Genome
@@ -76,26 +67,30 @@ struct BranchGenome : Genome
 	float dirChange = 0.003f;
 	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn
 
-	bool fruitGene = false;
+	// BRANCH GENETICS;
+	int branch0 = 1;
+	int branch1 = 2; // This is the genome of the branch it links to (< 0 = no branch, 1-10 = a branch gene, 11/12 = fruit gene)
+	int branch2 = 3;
+
+	float branch0Position = 0.5f;
+	float branch1Position = 0.75f; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
+	float branch2Position = 0.999999999f;
 };
 
+template <typename ChangeType>
 struct FruitChangeGene
 {
-	float valueChange = 0;
-	float changeOffset = 0;
-	float changeWidth = 0;
-
-	// size change is how it changes
-	// change offset is where the change begins to take place
-	// change width is for how long the change takes place
+	ChangeType valueChange; // How the value changes
+	float changeOffset = 0; // Where the change takes place
+	float changeLength = 0; // For how long the change takes place
 };
 
 struct FruitGenome : Genome
 {
 	// CHANGE VARIABLES
-	FruitChangeGene widthChanges[3] {};
-	FruitChangeGene colourChanges[9] {}; // there are nine for the three RGB values of each colour
-	FruitChangeGene directionChanges[3] {};
+	FruitChangeGene<float> widthChanges[3] {};
+	FruitChangeGene<FloatColour> colourChanges[3] {};
+	FruitChangeGene<float> directionChanges[3] {};
 
-	bool fruitGene = true;
+	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn
 };
