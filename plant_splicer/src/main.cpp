@@ -10,15 +10,18 @@ int main()
 
 	Plant plant(Vector2(400.0f, 800.0f), &window);
 
+	window.setActive(false);
+
 	while (window.isOpen())
 	{
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-
-			if (event.type == sf::Event::KeyPressed)
+			switch (event.type)
 			{
+			case sf::Event::Closed:
+				window.close();
+				break;
+			case sf::Event::KeyPressed:
 				if (event.key.code == sf::Keyboard::E)
 				{
 					sf::Texture scr;
@@ -26,11 +29,10 @@ int main()
 					scr.update(window);
 					scr.copyToImage().saveToFile("plant.png");
 				}
-			}
-
-			if (event.type == sf::Event::MouseButtonPressed)
-			{
+				break;
+			case sf::Event::MouseButtonPressed:
 				window.clear();
+				std::cout << "Generating!\n";
 				plant.Render();
 				window.display();
 			}

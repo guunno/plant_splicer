@@ -19,7 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Branch.h" />
+    <ClInclude Include="src\BranchOrientation.h" />
     <ClInclude Include="src\Buffer.h" />
+    <ClInclude Include="src\Fruit.h" />
     <ClInclude Include="src\Genome.h" />
     <ClInclude Include="src\Plant.h" />
     <ClInclude Include="src\Vector2.h" />

@@ -14,7 +14,7 @@ public:
 	/// <summary>
 	/// Free Buffer Memory
 	/// </summary>
-	~Buffer() { if (m_Data) delete[] m_Data; }
+	// ~Buffer() { if (m_Data) delete[] m_Data; }
 
 	/// <summary>
 	/// Create Buffer with a Specific Size
@@ -70,7 +70,8 @@ public:
 	/// <summary>
 	/// {Operator} Returns Pointer to Buffer
 	/// </summary>
-	inline operator BufferType* () { return m_Data; }
+	inline operator BufferType* () {
+		return m_Data; }
 
 	/// <summary>
 	/// Returns a Const Pointer to Buffer
@@ -81,11 +82,14 @@ public:
 	/// <summary>
 	/// {Operator} Returns a Const Pointer to Buffer
 	/// </summary>
-	inline operator const BufferType* () const { return m_Data; }
+	inline operator const BufferType* () const {
+		return m_Data; }
 
 
-	inline BufferType& operator[] (uint32_t index) { return m_Data[index]; }
-	inline const BufferType& operator[] (uint32_t index) const { return m_Data[index]; }
+	inline BufferType& operator[] (uint32_t index) {
+		return m_Data[index]; }
+	inline const BufferType& operator[] (uint32_t index) const {
+		return m_Data[index]; }
 
 private:
 	BufferType* m_Data = nullptr;

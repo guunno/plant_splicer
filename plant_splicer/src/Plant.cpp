@@ -1,6 +1,6 @@
 #include "Plant.h"
 
-#define MAX_RECUSION_DEPTH 5
+#define MAX_RECUSION_DEPTH 2
 
 Fruit::Fruit(FruitGenome& genomeData, Branch* parentBranch)
 {
@@ -9,6 +9,7 @@ Fruit::Fruit(FruitGenome& genomeData, Branch* parentBranch)
 
 void Fruit::Create(FruitGenome& genomeData, Branch* parentBranch)
 {
+	std::cout << genomeData.length << " Created!\n";
 	data.length = genomeData.length;
 
 	data.colourChanges[0] = genomeData.colourChanges[0];
@@ -82,14 +83,16 @@ static void RenderBranchSegment(
 	circle->setFillColor(colour + FloatColour{ 25, 25, 25, 100 });
 	circle->setPosition({ position.x - 1, position.y - 1 });
 	window->draw(*circle);
-
-	// Shadow
-	circle->setFillColor(FloatColour(
+	
+	FloatColour ShadowCol{
 		abs(colour.r - 25) + (colour.r - 25),
 		abs(colour.g - 25) + (colour.g - 25),
 		abs(colour.b - 25) + (colour.b - 25),
 		100
-	));
+	};
+
+	// Shadow
+	circle->setFillColor(ShadowCol);
 	circle->setPosition({ position.x + 1, position.y + 1 });
 	window->draw(*circle);
 
@@ -99,21 +102,79 @@ static void RenderBranchSegment(
 	window->draw(*circle);
 }
 
-void Branch::RenderBranch(
-	const std::unique_ptr<sf::CircleShape>& circle,
-	sf::RenderWindow* window,
-	const Buffer<Branch>& allBranches, 
-	const Branch::Orientation& offset = Branch::Orientation(),
-	uint32_t recursionDepth
+static float sigmoidDerivative(float input)
+{
+	const float n = 1 / (1 + exp(-input));
+	return n * (1 - n);
+}
+
+void Fruit::Render(
+	const std::unique_ptr<sf::CircleShape>& circle, 
+	sf::RenderWindow* window, 
+	const Buffer<Fruit>& allFruits, 
+	const BranchOrientation& offset
 ) const {
+	std::cout << "Rendering Fruit!\n";
+
+	Vector2 pos = offset.pos;
+	float dir = data.dir + offset.dir;
+	float width = LERP(offset.width, data.width, data.widthAdoption);
 	FloatColour colour;
+	colour.r = floor(LERP(offset.colour.r, data.colour.r, data.colourAdoption));
+	colour.g = floor(LERP(offset.colour.g, data.colour.g, data.colourAdoption));
+	colour.b = floor(LERP(offset.colour.b, data.colour.b, data.colourAdoption));
+
+	for (int i = 0; i < data.length; i++)
+	{
+		/*
+#define FRUIT_CHANGE(attr) attr.valueChange * sigmoidDerivative((i - attr.changeOffset) / attr.changeLength)
+		float dirChange = (
+			FRUIT_CHANGE(data.dirChanges[0]) + 
+			FRUIT_CHANGE(data.dirChanges[1]) + 
+			FRUIT_CHANGE(data.dirChanges[2])
+		);
+		float widthChange = (
+			FRUIT_CHANGE(data.widthChanges[0]) +
+			FRUIT_CHANGE(data.widthChanges[1]) +
+			FRUIT_CHANGE(data.widthChanges[2])
+		);
+		FloatColour colourChange = (
+			FRUIT_CHANGE(data.colourChanges[0]) +
+			FRUIT_CHANGE(data.colourChanges[1]) +
+			FRUIT_CHANGE(data.colourChanges[2])
+		);*/
+
+		float dirChange = 0;
+		float widthChange = 0;
+		FloatColour colourChange;
+
+		dir += (dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
+		pos += Vector2(0, -1).rotateNew(dir);
+		width += widthChange;
+		colour += colourChange;
+
+		RenderBranchSegment(circle, pos, width, colour, window);
+	}
+}
+
+void Branch::Render(
+	const std::unique_ptr<sf::CircleShape>& circle, 
+	sf::RenderWindow* window, 
+	const Buffer<Branch>& allBranches, const Buffer<Fruit>& allFruit, 
+	const BranchOrientation& offset = BranchOrientation(),
+	uint32_t recursionDepth
+) const
+{
+	//std::cout << "Rendering Branch!\n";
 
 	Vector2 pos = offset.pos;
 	float dir = data.dir + offset.dir;
 	float width = LERP((recursionDepth == 0 ? data.width : offset.width), data.width, data.widthAdoption);
+	FloatColour colour;
 	colour.r = floor(LERP((recursionDepth == 0 ? data.colour.r : offset.colour.r), data.colour.r, data.colourAdoption));
 	colour.g = floor(LERP((recursionDepth == 0 ? data.colour.g : offset.colour.g), data.colour.g, data.colourAdoption));
 	colour.b = floor(LERP((recursionDepth == 0 ? data.colour.b : offset.colour.b), data.colour.b, data.colourAdoption));
+	colour.a = 100;
 
 	for (int i = 0; i < data.length; i++)
 	{
@@ -129,7 +190,12 @@ void Branch::RenderBranch(
 			for (int j = 0; j < 3; j++)
 			{
 				if (i == data.branchingPoints[j] && data.branchIndexes[j] >= 0)
-					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, recursionDepth + 1);
+				{
+					if (isChildABranch[j])
+						allBranches[childIndices[j]].Render(circle, window, allBranches, allFruit, { pos, dir, colour, width }, recursionDepth + 1);
+					else
+						allFruit[childIndices[j]].Render(circle, window, allFruit, { pos, dir, colour, width });
+				}
 			}
 		}
 	}
@@ -140,21 +206,24 @@ Plant::Plant(Vector2 pos, sf::RenderWindow* window)
 {
 	m_Branches.Create(GetBranchCount());
 	m_Fruits.Create(GetFruitCount());
+
 	InitBranches();
+
+	std::cout << "Creating " << m_Branches.Size() << " Branches and " << m_Fruits.Size() << " Fruits!\n";
 }
 
 void Plant::Render()
 {
-	m_Branches[0].RenderBranch(
+	m_Branches[0].Render(
 		m_BranchRenderShape, window, 
-		m_Branches,
-		Branch::Orientation { pos, 0, FloatColour{ 0, 0, 0 } }
+		m_Branches, m_Fruits,
+		BranchOrientation{ pos, 0, FloatColour{ 0, 0, 0 } }
 	);
 }
 
-uint32_t Plant::GetBranchCount(uint32_t genomeIdx, uint8_t recursionDepth)
+uint32_t Plant::GetBranchCount(int genomeIdx, uint8_t recursionDepth)
 {
-	if (genomeIdx > 13) return 0;
+	if (genomeIdx < 0 || genomeIdx > 9) return 0;
 	if (recursionDepth >= MAX_RECUSION_DEPTH) return 1;
 
 	return (
@@ -165,16 +234,15 @@ uint32_t Plant::GetBranchCount(uint32_t genomeIdx, uint8_t recursionDepth)
 	);
 }
 
-uint32_t Plant::GetFruitCount(uint32_t genomeIdx, uint8_t recursionDepth)
+uint32_t Plant::GetFruitCount(int genomeIdx, uint8_t recursionDepth)
 {
+	if (genomeIdx < 0 || recursionDepth >= MAX_RECUSION_DEPTH) return 0;
 	if (genomeIdx >= 10) return 1;
-	if (recursionDepth >= MAX_RECUSION_DEPTH) return 0;
 
 	return (
-		GetBranchCount(branchGenes[genomeIdx].branch0, recursionDepth + 1) +
-		GetBranchCount(branchGenes[genomeIdx].branch1, recursionDepth + 1) +
-		GetBranchCount(branchGenes[genomeIdx].branch2, recursionDepth + 1) +
-		1
+		GetFruitCount(branchGenes[genomeIdx].branch0, recursionDepth + 1) +
+		GetFruitCount(branchGenes[genomeIdx].branch1, recursionDepth + 1) +
+		GetFruitCount(branchGenes[genomeIdx].branch2, recursionDepth + 1)
 	);
 }
 
@@ -190,13 +258,17 @@ uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch*
 	for (int i = 0; i < 3; i++)
 	{
 		int index = m_Branches[currentIndex].data.branchIndexes[i];
-		if (index >= 0)
+		if (index < 0) continue;
+
+		if (index < 10)
 		{
-			if (index >= 10)
-				m_Branches[currentIndex].childIndices[i] = InitFruit(index, &m_Branches[currentIndex]);
-			else
-				m_Branches[currentIndex].childIndices[i] = InitBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
+			m_Branches[currentIndex].childIndices[i] = InitBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
 		}
+		else
+		{
+			m_Branches[currentIndex].childIndices[i] = InitFruit(index, &m_Branches[currentIndex]);
+			m_Branches[currentIndex].isChildABranch[i] = false;
+		}			
 	}
 
 	return currentIndex;
@@ -205,7 +277,7 @@ uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch*
 uint32_t Plant::InitFruit(uint32_t genomeIdx, Branch* parent)
 {
 	uint32_t currentIndex = m_IntermediateFruitCount;
-	m_Fruits[currentIndex].Create(branchGenes[genomeIdx], parent);
+	m_Fruits[currentIndex].Create(fruitGenes[genomeIdx - 10], parent);
 	m_IntermediateFruitCount++;
 
 	return currentIndex;
