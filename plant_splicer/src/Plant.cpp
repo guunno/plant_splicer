@@ -60,16 +60,8 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch)
 	data.widthAdoption = genomeData.widthAdoption;
 	data.dirAdoption = genomeData.dirAdoption;
 
-	if (parentBranch)
-	{
-		data.dir = LERP(genomeData.initDir, parentBranch->data.dir, genomeData.dirAdoption);
-		data.width = LERP(genomeData.initWidth, parentBranch->data.width, genomeData.widthAdoption);
-	}
-	else
-	{
-		data.dir = genomeData.initDir;
-		data.width = genomeData.initWidth;
-	}
+	data.width = genomeData.initWidth;
+	data.dir = genomeData.initDir;
 }
 
 static void RenderBranchSegment(

@@ -60,6 +60,8 @@ void Editor::Process()
 			std::ostringstream oss;
 			oss << *managers[currBranch].buttons[i].intVal;
 			text.setString(oss.str());
+			if (managers[currBranch].activeButton == &managers[currBranch].buttons[i])
+				text.setString(managers[currBranch].stringifiedNum);
 			text.setPosition(250, (i + 1) * 30);
 			m_window->draw(text);
 		}
