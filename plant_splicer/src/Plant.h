@@ -22,6 +22,7 @@ struct BranchData
 	float dirChange = 0; // Amount branch rotates each step
 	float widthAdoption = 0; // How much colour is inherited from the point it splits up from
 	float colourAdoption = 0; // How much colour is inherited from the point it splits up from
+	float dirAdoption = 0; // How much dir is inherited
 	
 	float randomTurn = 0; // Variable amount branch rotates each step
 
@@ -111,12 +112,13 @@ public:
 	static const uint32_t FRUIT_COUNT = 2;
 	Buffer<BranchGenome> branchGenes { BRANCH_COUNT };
 	Buffer<FruitGenome> fruitGenes { FRUIT_COUNT };
+	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
+	uint32_t InitFruit(uint32_t genomeIdx, Branch* parent);
+	void ResetIntermediate();
 
 private:
 	uint32_t GetBranchCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0);
 	uint32_t GetFruitCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0);
-	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
-	uint32_t InitFruit(uint32_t genomeIdx, Branch* parent);
 
 private:
 	std::unique_ptr<sf::CircleShape> m_BranchRenderShape = std::make_unique<sf::CircleShape>();

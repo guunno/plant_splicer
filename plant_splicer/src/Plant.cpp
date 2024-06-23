@@ -58,6 +58,7 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch)
 	data.colourAdoption = genomeData.colourAdoption;
 
 	data.widthAdoption = genomeData.widthAdoption;
+	data.dirAdoption = genomeData.dirAdoption;
 
 	if (parentBranch)
 	{
@@ -109,7 +110,7 @@ void Branch::RenderBranch(
 	FloatColour colour;
 
 	Vector2 pos = offset.pos;
-	float dir = data.dir + offset.dir;
+	float dir = LERP(data.dir, offset.dir, data.dirAdoption);
 	float width = LERP((recursionDepth == 0 ? data.width : offset.width), data.width, data.widthAdoption);
 	colour.r = floor(LERP((recursionDepth == 0 ? data.colour.r : offset.colour.r), data.colour.r, data.colourAdoption));
 	colour.g = floor(LERP((recursionDepth == 0 ? data.colour.g : offset.colour.g), data.colour.g, data.colourAdoption));
@@ -133,6 +134,11 @@ void Branch::RenderBranch(
 			}
 		}
 	}
+}
+
+void Plant::ResetIntermediate()
+{
+	m_IntermediateBranchCount = 0;
 }
 
 Plant::Plant(Vector2 pos, sf::RenderWindow* window)

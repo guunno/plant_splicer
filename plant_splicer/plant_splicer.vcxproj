@@ -20,11 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Buffer.h" />
+    <ClInclude Include="src\Editor\Button.h" />
+    <ClInclude Include="src\Editor\Editor.h" />
     <ClInclude Include="src\Genome.h" />
     <ClInclude Include="src\Plant.h" />
     <ClInclude Include="src\Vector2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Editor\Button.cpp" />
+    <ClCompile Include="src\Editor\Editor.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Plant.cpp" />
     <ClCompile Include="src\Vector2.cpp" />
@@ -41,6 +45,10 @@
     <None Include="Dependencies\SFML\SFML-2.5.1\bin\sfml-system-d-2.dll" />
     <None Include="Dependencies\SFML\SFML-2.5.1\bin\sfml-window-2.dll" />
     <None Include="Dependencies\SFML\SFML-2.5.1\bin\sfml-window-d-2.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\bin\Debug\verdana.ttf" />
+    <Font Include="src\Editor\verdana.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
