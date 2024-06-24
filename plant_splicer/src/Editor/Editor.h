@@ -6,7 +6,8 @@
 class Editor
 {
 public:
-	sf::RenderWindow* m_window;
+	std::unique_ptr<sf::RenderWindow> m_window;
+
 	sf::Font font;
 	sf::Text text;
 	Buffer<BranchGenome> branchGenomes{ 10 };
@@ -14,7 +15,7 @@ public:
 	int currPage = 0;
 	int currBranch = 0;
 
-	void Create(sf::RenderWindow& window);
+	void Create();
 
 	void Process();
 };

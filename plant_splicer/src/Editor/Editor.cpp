@@ -1,10 +1,12 @@
 #include "Editor.h"
 #include <sstream>
 
-void Editor::Create(sf::RenderWindow& window)
+#include <memory>
+
+void Editor::Create()
 {
-	m_window = &window;
-	window.create(sf::VideoMode(500, 800), "Editor", sf::Style::Titlebar);
+	m_window = std::make_unique<sf::RenderWindow>();
+	m_window->create(sf::VideoMode(500, 870), "Editor", sf::Style::Titlebar);
 	font.loadFromFile("src/Editor/verdana.ttf");
 	text.setFont(font);
 	text.setString("Editor");

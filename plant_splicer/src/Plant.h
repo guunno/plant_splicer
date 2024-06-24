@@ -55,25 +55,25 @@ public:
 	Branch() {}
 	Branch(BranchGenome& genomeData, Branch* parentBranch = nullptr);
 	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr);
-	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, sf::RenderWindow* window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, uint32_t recursionDepth = 0) const;
+	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, uint32_t recursionDepth = 0) const;
 
 public:
 	BranchData data;
-	uint32_t childIndices[3] { 0, 0, 0 }; // Child Index of 0 would mean no child for that index
-	bool isChildBranch[3]{ true, true, true }; // Is child a branch or Fruit?
+	uint32_t childIndices[6] { 0, 0, 0, 0, 0, 0 }; // Child Index of 0 would mean no child for that index
+	bool isChildBranch[6] { true, true, true, true, true, true }; // Is child a branch or Fruit?
 };
 
 class Plant
 {
 public:
 	Plant() {}
-	Plant(Vector2 pos, sf::RenderWindow* window);
+	Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window);
 
 	void Render();
 	
 public:
 	Vector2 pos;
-	sf::RenderWindow* window = nullptr;
+	std::shared_ptr<sf::RenderWindow> window = nullptr;
 
 	static const uint32_t BRANCH_COUNT = 10;
 	static const uint32_t FRUIT_COUNT = 2;

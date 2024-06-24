@@ -45,7 +45,7 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch)
 static void RenderBranchSegment(
 	const std::unique_ptr<sf::CircleShape>& circle,
 	Vector2 position, float width, const FloatColour& colour,
-	sf::RenderWindow* window
+	const std::shared_ptr<sf::RenderWindow>& window
 ) {
 	circle->setRadius(width);
 
@@ -72,7 +72,7 @@ static void RenderBranchSegment(
 
 void Branch::RenderBranch(
 	const std::unique_ptr<sf::CircleShape>& circle,
-	sf::RenderWindow* window,
+	const std::shared_ptr<sf::RenderWindow>& window,
 	const Buffer<Branch>& allBranches, 
 	const Branch::Orientation& offset = Branch::Orientation(),
 	uint32_t recursionDepth
@@ -111,7 +111,7 @@ void Plant::ResetIntermediate()
 	m_IntermediateBranchCount = 0;
 }
 
-Plant::Plant(Vector2 pos, sf::RenderWindow* window)
+Plant::Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window)
 	:pos(pos), window(window)
 {
 	m_Branches.Create(GetBranchCount());

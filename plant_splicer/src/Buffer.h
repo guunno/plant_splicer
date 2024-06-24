@@ -14,7 +14,7 @@ public:
 	/// <summary>
 	/// Free Buffer Memory
 	/// </summary>
-	~Buffer() { if (m_Data) delete[] m_Data; }
+	~Buffer() { if (m_SelfDestruct && m_Data) delete[] m_Data; }
 
 	/// <summary>
 	/// Create Buffer with a Specific Size
@@ -87,7 +87,24 @@ public:
 	inline BufferType& operator[] (uint32_t index) { return m_Data[index]; }
 	inline const BufferType& operator[] (uint32_t index) const { return m_Data[index]; }
 
+	/// <summary>
+	/// {Operator} Frees Memory and Sets to other!!! :)
+	/// </summary>
+	/// <param name="other"></param>
+	inline void operator= (Buffer<BufferType>& other)
+	{
+		if (m_Data && m_SelfDestruct)
+			delete[] m_Data;
+
+		this->m_Data = other.m_Data;
+		this->m_Size = other.m_Size;
+
+		other.m_SelfDestruct = false;
+	}
+
 private:
 	BufferType* m_Data = nullptr;
 	uint32_t m_Size = 0;
+
+	bool m_SelfDestruct = false;
 };
