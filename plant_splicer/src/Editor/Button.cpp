@@ -26,8 +26,9 @@ void SoloBranchGenomeButtonManager::ActivateButton(int mouseY, int currPage)
 	// there is an offset for space for something at the top, could be anything :/
 	int selectedRow = floor(mouseY / 30);
 	selectedRow -= 2;
-	if (selectedRow >= 0 && selectedRow < 22)
+	if (selectedRow >= 0 && selectedRow < 28)
 	{
+		stringifiedNum = "";
 		activeButton = &buttons[selectedRow];
 	}
 };
@@ -167,11 +168,23 @@ void SoloBranchGenomeButtonManager::LinkButtons(BranchGenome& linkedGenome)
 	buttons[17].PointButton(linkedGenome.branch1);
 	buttons[18].InitButton("Branch2Gene", 18, 38, true);
 	buttons[18].PointButton(linkedGenome.branch2);
+	buttons[19].InitButton("Branch3Gene", 16, 38, true);
+	buttons[19].PointButton(linkedGenome.branch3);
+	buttons[20].InitButton("Branch4Gene", 17, 38, true);
+	buttons[20].PointButton(linkedGenome.branch4);
+	buttons[21].InitButton("Branch5Gene", 18, 38, true);
+	buttons[21].PointButton(linkedGenome.branch5);
 
-	buttons[19].InitButton("Branch0Pos", 19, 38, false, 1.0f, 0.0f);
-	buttons[19].PointButton(linkedGenome.branch0Position);
-	buttons[20].InitButton("Branch1Pos", 20, 38, false, 1.0f, 0.0f);
-	buttons[20].PointButton(linkedGenome.branch1Position);
-	buttons[21].InitButton("Branch2Pos", 21, 38, false, 1.0f, 0.0f);
-	buttons[21].PointButton(linkedGenome.branch2Position);
+	buttons[22].InitButton("Branch0Pos", 19, 38, false, 1.0f, 0.0f);
+	buttons[22].PointButton(linkedGenome.branch0Position);
+	buttons[23].InitButton("Branch1Pos", 20, 38, false, 1.0f, 0.0f);
+	buttons[23].PointButton(linkedGenome.branch1Position);
+	buttons[24].InitButton("Branch2Pos", 21, 38, false, 1.0f, 0.0f);
+	buttons[24].PointButton(linkedGenome.branch2Position);
+	buttons[25].InitButton("Branch3Pos", 19, 38, false, 1.0f, 0.0f);
+	buttons[25].PointButton(linkedGenome.branch3Position);
+	buttons[26].InitButton("Branch4Pos", 20, 38, false, 1.0f, 0.0f);
+	buttons[26].PointButton(linkedGenome.branch4Position);
+	buttons[27].InitButton("Branch5Pos", 21, 38, false, 1.0f, 0.0f);
+	buttons[27].PointButton(linkedGenome.branch5Position);
 }

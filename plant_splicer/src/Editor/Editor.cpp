@@ -50,7 +50,7 @@ void Editor::Process()
 	text.setPosition(0, 0);
 	m_window->draw(text);
 
-	for (int i = 0; i < 22; i++)
+	for (int i = 0; i < 28; i++)
 	{
 		text.setString(managers[currBranch].buttons[i].label);
 		text.setPosition(0, (i + 1) * 30);

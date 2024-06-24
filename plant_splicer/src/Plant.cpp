@@ -2,34 +2,6 @@
 
 #define MAX_RECUSION_DEPTH 5
 
-Fruit::Fruit(FruitGenome& genomeData, Branch* parentBranch)
-{
-	Create(genomeData, parentBranch);
-}
-
-void Fruit::Create(FruitGenome& genomeData, Branch* parentBranch)
-{
-	data.length = genomeData.length;
-
-	data.colourChanges[0] = genomeData.colourChanges[0];
-	data.colourChanges[1] = genomeData.colourChanges[1];
-	data.colourChanges[2] = genomeData.colourChanges[2];
-
-	data.dirChanges[0] = genomeData.directionChanges[0];
-	data.dirChanges[1] = genomeData.directionChanges[1];
-	data.dirChanges[2] = genomeData.directionChanges[2];
-
-	data.randomTurn = genomeData.randTurn;
-
-	data.colour = genomeData.initColour;
-
-	data.colourAdoption = genomeData.colourAdoption;
-	data.widthAdoption = genomeData.widthAdoption;
-
-	data.dir = LERP(genomeData.initDir, parentBranch->data.dir, genomeData.dirAdoption);
-	data.width = LERP(genomeData.initWidth, parentBranch->data.width, genomeData.widthAdoption);
-}
-
 Branch::Branch(BranchGenome& genomeData, Branch* parentBranch)
 {
 	Create(genomeData, parentBranch);
@@ -42,10 +14,16 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch)
 	data.branchIndexes[0] = genomeData.branch0;
 	data.branchIndexes[1] = genomeData.branch1;
 	data.branchIndexes[2] = genomeData.branch2;
+	data.branchIndexes[3] = genomeData.branch3;
+	data.branchIndexes[4] = genomeData.branch4;
+	data.branchIndexes[5] = genomeData.branch5;
 
 	data.branchingPoints[0] = (int)floor(genomeData.branch0Position * data.length) - 1;
 	data.branchingPoints[1] = (int)floor(genomeData.branch1Position * data.length) - 1;
 	data.branchingPoints[2] = (int)floor(genomeData.branch2Position * data.length) - 1;
+	data.branchingPoints[3] = (int)floor(genomeData.branch3Position * data.length) - 1;
+	data.branchingPoints[4] = (int)floor(genomeData.branch4Position * data.length) - 1;
+	data.branchingPoints[5] = (int)floor(genomeData.branch5Position * data.length) - 1;
 
 	data.randomTurn = genomeData.randTurn;
 	data.isDirPositive = rand() % 2;
@@ -119,7 +97,7 @@ void Branch::RenderBranch(
 
 		if (recursionDepth < MAX_RECUSION_DEPTH)
 		{
-			for (int j = 0; j < 3; j++)
+			for (int j = 0; j < 6; j++)
 			{
 				if (i == data.branchingPoints[j] && data.branchIndexes[j] >= 0)
 					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, recursionDepth + 1);
@@ -137,14 +115,13 @@ Plant::Plant(Vector2 pos, sf::RenderWindow* window)
 	:pos(pos), window(window)
 {
 	m_Branches.Create(GetBranchCount());
-	m_Fruits.Create(GetFruitCount());
 	InitBranches();
 }
 
 void Plant::Render()
 {
 	m_Branches[0].RenderBranch(
-		m_BranchRenderShape, window, 
+		(m_BranchRenderShape), window, 
 		m_Branches,
 		Branch::Orientation { pos, 0, FloatColour{ 0, 0, 0 } }
 	);
@@ -163,19 +140,6 @@ uint32_t Plant::GetBranchCount(uint32_t genomeIdx, uint8_t recursionDepth)
 	);
 }
 
-uint32_t Plant::GetFruitCount(uint32_t genomeIdx, uint8_t recursionDepth)
-{
-	if (genomeIdx >= 10) return 1;
-	if (recursionDepth >= MAX_RECUSION_DEPTH) return 0;
-
-	return (
-		GetBranchCount(branchGenes[genomeIdx].branch0, recursionDepth + 1) +
-		GetBranchCount(branchGenes[genomeIdx].branch1, recursionDepth + 1) +
-		GetBranchCount(branchGenes[genomeIdx].branch2, recursionDepth + 1) +
-		1
-	);
-}
-
 uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch* parent)
 {
 	uint32_t currentIndex = m_IntermediateBranchCount;
@@ -185,26 +149,14 @@ uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch*
 	if (recursionDepth >= MAX_RECUSION_DEPTH)
 		return currentIndex;
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		int index = m_Branches[currentIndex].data.branchIndexes[i];
 		if (index >= 0)
 		{
-			if (index >= 10)
-				m_Branches[currentIndex].childIndices[i] = InitFruit(index, &m_Branches[currentIndex]);
-			else
-				m_Branches[currentIndex].childIndices[i] = InitBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
+			m_Branches[currentIndex].childIndices[i] = InitBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
 		}
 	}
-
-	return currentIndex;
-}
-
-uint32_t Plant::InitFruit(uint32_t genomeIdx, Branch* parent)
-{
-	uint32_t currentIndex = m_IntermediateFruitCount;
-	m_Fruits[currentIndex].Create(branchGenes[genomeIdx], parent);
-	m_IntermediateFruitCount++;
 
 	return currentIndex;
 }

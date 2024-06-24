@@ -68,29 +68,17 @@ struct BranchGenome : Genome
 	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn
 
 	// BRANCH GENETICS;
-	int branch0 = 1;
-	int branch1 = 2; // This is the genome of the branch it links to (< 0 = no branch, 1-10 = a branch gene, 11/12 = fruit gene)
-	int branch2 = 3;
+	int branch0 = -1;
+	int branch1 = -1; // This is the genome of the branch it links to (< 0 = no branch, 1-10 = a branch gene, 11/12 = fruit gene)
+	int branch2 = -1;
+	int branch3 = -1;
+	int branch4 = -1;
+	int branch5 = -1;
 
-	float branch0Position = 0.5f;
-	float branch1Position = 0.75f; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
-	float branch2Position = 0.999999999f;
-};
-
-template <typename ChangeType>
-struct FruitChangeGene
-{
-	ChangeType valueChange; // How the value changes
-	float changeOffset = 0; // Where the change takes place
-	float changeLength = 0; // For how long the change takes place
-};
-
-struct FruitGenome : Genome
-{
-	// CHANGE VARIABLES
-	FruitChangeGene<float> widthChanges[3] {};
-	FruitChangeGene<FloatColour> colourChanges[3] {};
-	FruitChangeGene<float> directionChanges[3] {};
-
-	float randTurn = 0.04f; // will change by dirChange and also the random change between -randTurn and positive randTurn
+	float branch0Position = 1;
+	float branch1Position = 1; // Where along the current branch the new branch stems from (if out of range, then no branch is made)
+	float branch2Position = 1;
+	float branch3Position = 1;
+	float branch4Position = 1;
+	float branch5Position = 1;
 };

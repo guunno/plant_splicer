@@ -4,7 +4,7 @@
 #include "../Genome.h"
 #include <SFML/System.hpp>
 
-#define NUM_GENES_IN_BRANCH 22
+#define NUM_GENES_IN_BRANCH 28
 
 class ValueEditButton
 {
