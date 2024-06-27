@@ -12,9 +12,9 @@ public:
 	Buffer() {}
 
 	/// <summary>
-	/// Free Buffer Memory
+	/// Recreate
 	/// </summary>
-	~Buffer() { if (m_SelfDestruct && m_Data) delete[] m_Data; }
+	void ReCreate(uint32_t Size) { m_Data = new BufferType[Size]; m_Size = Size; }
 
 	/// <summary>
 	/// Create Buffer with a Specific Size

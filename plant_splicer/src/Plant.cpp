@@ -109,6 +109,7 @@ void Branch::RenderBranch(
 void Plant::ResetIntermediate()
 {
 	m_IntermediateBranchCount = 0;
+	m_Branches.ReCreate(GetBranchCount());
 }
 
 Plant::Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window)
@@ -136,6 +137,9 @@ uint32_t Plant::GetBranchCount(uint32_t genomeIdx, uint8_t recursionDepth)
 		GetBranchCount(branchGenes[genomeIdx].branch0, recursionDepth + 1) +
 		GetBranchCount(branchGenes[genomeIdx].branch1, recursionDepth + 1) +
 		GetBranchCount(branchGenes[genomeIdx].branch2, recursionDepth + 1) +
+		GetBranchCount(branchGenes[genomeIdx].branch3, recursionDepth + 1) +
+		GetBranchCount(branchGenes[genomeIdx].branch4, recursionDepth + 1) +
+		GetBranchCount(branchGenes[genomeIdx].branch5, recursionDepth + 1) +
 		1
 	);
 }
