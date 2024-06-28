@@ -4,7 +4,7 @@
 #include "../Genome.h"
 #include <SFML/System.hpp>
 
-#define NUM_GENES_IN_BRANCH 28
+#define NUM_GENES_IN_BRANCH 33
 
 class ValueEditButton
 {
@@ -17,7 +17,7 @@ public:
 	bool floorToInt = false;
 	sf::String label;
 
-	void InitButton(sf::String name, int buttonIndex = 0, int buttonsPerPage = 38, bool floorToIntN = false, float maxN = 1000, float minN = -1000);
+	void InitButton(sf::String name, int buttonIndex, bool floorToIntN = false, float maxN = 1000, float minN = -1000);
 	void PointButton(float& value);
 	void PointButton(int& value);
 
@@ -31,6 +31,24 @@ public:
 	sf::String stringifiedNum = "";
 
 	void LinkButtons(BranchGenome& linkedGenome);
+	void ActivateButton(int mouseX, int currPage);
+	void ProcessInput(sf::Keyboard::Key key);
+};
+
+struct Settings
+{
+	FloatColour editorBG{ 2, 0, 5 };
+	FloatColour mainBG{ sf::Color::Black };
+};
+
+class SettingsButtonManager
+{
+public:
+	Buffer<ValueEditButton> buttons{6};
+	ValueEditButton* activeButton = nullptr;
+	sf::String stringifiedNum = "";
+
+	void LinkButtons(Settings& editor);
 	void ActivateButton(int mouseX, int currPage);
 	void ProcessInput(sf::Keyboard::Key key);
 };

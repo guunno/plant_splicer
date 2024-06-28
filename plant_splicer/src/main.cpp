@@ -9,17 +9,20 @@
 
 int main()
 {
-	std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>(sf::VideoMode(800, 800), "Plant Splicer", sf::Style::Close);
+	std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>(sf::VideoMode(800, 800), "Render", sf::Style::Close);
 	std::unique_ptr<Editor> editor = std::make_unique<Editor>();
 	sf::Event event;
 	Vector2 move(1, 0);
 	Plant plant(Vector2(400.0f, 800.0f), window);
 
-	window->clear();
+	editor->Create();
+
+	window->clear((editor->settings.mainBG));
 	plant.Render();
 	window->display();
 
-	editor->Create();
+
+	unsigned int t = std::chrono::system_clock::now().time_since_epoch().count();
 
 	while (window->isOpen())
 	{
@@ -28,13 +31,12 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window->close();
 
-
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				window->clear();
+				window->clear(editor->settings.mainBG);
 				plant.branchGenes = editor->branchGenomes;
-				plant.ResetIntermediate();
-				plant.InitBranches();
+				t = std::chrono::system_clock::now().time_since_epoch().count();
+				plant.InitAllBranches(t);
 				plant.Render();
 				window->display();
 			}
@@ -43,6 +45,9 @@ int main()
 			{
 				if (event.key.code == sf::Keyboard::E)
 				{
+					window->clear(editor->settings.mainBG);
+					plant.InitAllBranches(t);
+					plant.Render();
 					sf::Texture screenShot;
 					screenShot.create(window->getSize().x, window->getSize().y);
 					screenShot.update(*window);

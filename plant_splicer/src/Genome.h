@@ -45,7 +45,9 @@ struct FloatColour
 struct Genome
 {
 	// INITIAL VARIABLES
-	float initDir = 0.0f; //up is 0
+	float initDir = 0.0f; //up is 0 (radians)
+	float dirSpread = 0.0f; // spread in radians
+	int spreadMaxDistanceEff = 50; // how close branches have to be to spread
 	FloatColour initColour{ 60, 30, 0 };
 	float initWidth = 12; //pixels
 	int length = 100;
@@ -81,4 +83,8 @@ struct BranchGenome : Genome
 	float branch3Position = 1;
 	float branch4Position = 1;
 	float branch5Position = 1;
+
+	int rBranch0 = -1; // Branches that only spawn at the end of a recursion limit (e.g if genome 0 creates branch with genome0, it will repeat until it hits the limit),
+	int rBranch1 = -1; // Always stems off the very end of the branch
+	int rBranch2 = -1; // can help reduce genome usage
 };

@@ -9,17 +9,20 @@
 
 #define LERP(a, b, k) a * k + b * (1 - k)
 
+
 struct BranchData
 {
 	int length = 2; // Length of the Branch
 	int branchingPoints[6] { 1, 1, 1, 1, 1, 1 }; // Where Along Each Branch do Child Branches begin
 	int branchIndexes[6] {-1, -1, -1, -1, -1, -1}; // Genome Indices of Child Branches
+	int rBranchIndexes[3]{ -1, -1, -1 }; // Genome Indices of Recursive Ending Branches
 	int numBranches = 0; // Number of Child Branches
 	bool isDirPositive = 0; // Direction is Left or Right
-	
+
 	float widthChange = 0; // Amount Width changes each step
 	FloatColour colourChange {0, 0, 0}; // Amount Colour changes each step
 	float dirChange = 0; // Amount branch rotates each step
+	float spreadOff = 0;
 	float widthAdoption = 0; // How much colour is inherited from the point it splits up from
 	float colourAdoption = 0; // How much colour is inherited from the point it splits up from
 	float dirAdoption = 0; // How much dir is inherited
@@ -54,13 +57,12 @@ public:
 public:
 	Branch() {}
 	Branch(BranchGenome& genomeData, Branch* parentBranch = nullptr);
-	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr);
+	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr, int gIdx = 0, int chInd = 0);
 	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, uint32_t recursionDepth = 0) const;
 
 public:
 	BranchData data;
-	uint32_t childIndices[6] { 0, 0, 0, 0, 0, 0 }; // Child Index of 0 would mean no child for that index
-	bool isChildBranch[6] { true, true, true, true, true, true }; // Is child a branch or Fruit?
+	uint32_t childIndices[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Child Index of 0 would mean no child for that index
 };
 
 class Plant
@@ -79,6 +81,8 @@ public:
 	static const uint32_t FRUIT_COUNT = 2;
 	Buffer<BranchGenome> branchGenes { BRANCH_COUNT };
 	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
+	uint32_t InitRBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
+	void InitAllBranches(unsigned int seed);
 	void ResetIntermediate();
 
 private:
@@ -87,5 +91,6 @@ private:
 private:
 	std::unique_ptr<sf::CircleShape> m_BranchRenderShape = std::make_unique<sf::CircleShape>();
 	uint32_t m_IntermediateBranchCount = 0;
+	uint32_t m_BranchCount = 0;
 	Buffer<Branch> m_Branches{};
 };
