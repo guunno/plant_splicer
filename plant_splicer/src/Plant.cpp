@@ -81,12 +81,10 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int gIdx, in
 		}
 	}
 
-	if (numOfSiblings == 0)
+	if (numOfSiblings < 2)
 	{
 		return;
 	}
-	
-	std::cout << youngness << ", " << thisIdx << "\n";
 
 	data.spreadOff += ((genomeData.dirSpread * 1.0f / numOfSiblings * 1.0f) * youngness * 1.0f) - (genomeData.dirSpread / PI);
 }
