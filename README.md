@@ -10,6 +10,8 @@ Mix and match plant genetics to create beautiful images!
 - Press "S" to take a screenshot
 - You can't save or load while editing
 - Splice plants that have already been spliced
+- Enter filenames exactly as they are written![image](https://github.com/Wurnace/plant_splicer/assets/122387227/2d19391d-eb8d-4c15-a21f-e169a02487fa)
+
 
 # Some examples
 More examples at [Showcase](https://github.com/Wurnace/plant_splicer/tree/Showcase)
