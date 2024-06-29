@@ -1,5 +1,6 @@
 #include "Editor.h"
 #include <sstream>
+#include <chrono>
 
 #include <memory>
 
@@ -55,15 +56,23 @@ void Editor::Process()
 	sf::Event ev;
 	while(m_window->pollEvent(ev))
 	{
-		if (!IsAnythingActive())
+		if (ev.type == sf::Event::KeyPressed)
 		{
-			if (ev.key.code == sf::Keyboard::S)
+			if (!IsAnythingActive())
 			{
-				m_FileManager.SaveGenomes(branchGenomes);
-			}
-			if (ev.key.code == sf::Keyboard::L)
-			{
-				m_FileManager.LoadGenomes(branchGenomes, splicingSettings.loadPath);
+				if (ev.key.code == sf::Keyboard::O)
+				{
+					m_FileManager.SaveGenomes(branchGenomes);
+				}
+				if (ev.key.code == sf::Keyboard::I)
+				{
+					m_FileManager.LoadGenomes(branchGenomes, splicingSettings.loadPath);
+				}
+				if (ev.key.code == sf::Keyboard::P)
+				{
+					m_FileManager.CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
+						std::chrono::system_clock::now().time_since_epoch().count(), branchGenomes);
+				}
 			}
 		}
 		if (mode != Menu)
@@ -206,7 +215,7 @@ void Editor::Process()
 			(text.getLocalBounds().width / 2), 280);
 		m_window->draw(text);
 
-		text.setString("Splicing/Loading");
+		text.setString("Save/Load/Splice");
 		text.setPosition(250 -
 			(text.getLocalBounds().width / 2), 380);
 		m_window->draw(text);
@@ -312,6 +321,15 @@ void Editor::Process()
 			text.setPosition(250, (splicingManager.buttons[i].yPos + 1) * 30);
 			m_window->draw(text);
 		}
+		text.setString("KeyBinds");
+		text.setPosition(250 -
+			(text.getLocalBounds().width / 2), 300);
+		m_window->draw(text);
+
+		text.setString("I-Load/O-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
+		text.setPosition(250 -
+			(text.getLocalBounds().width / 2), 350);
+		m_window->draw(text);
 	}
 	m_window->display();
 };

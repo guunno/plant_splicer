@@ -3,6 +3,7 @@
 #include "../Buffer.h"
 #include "../Genome.h"
 #include <SFML/System.hpp>
+#include <map>
 
 #define NUM_GENES_IN_BRANCH 33
 
@@ -33,9 +34,7 @@ public:
 
 	void InitButton(sf::String name, int buttonIndex);
 	void PointButton(sf::String& pointer);
-
 };
-
 
 class SoloBranchGenomeButtonManager 
 {
@@ -53,6 +52,8 @@ struct Settings
 {
 	FloatColour editorBG{ 2, 0, 5 };
 	FloatColour mainBG{ sf::Color::Black };
+
+	sf::String notification = "";
 };
 
 struct SplicingSettings

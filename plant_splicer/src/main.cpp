@@ -20,8 +20,7 @@ int main()
 	window->clear((editor->settings.mainBG));
 	plant.Render();
 	window->display();
-
-
+	
 	unsigned int t = std::chrono::system_clock::now().time_since_epoch().count();
 
 	while (window->isOpen())
@@ -43,7 +42,7 @@ int main()
 
 			if (event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::E)
+				if (event.key.code == sf::Keyboard::S)
 				{
 					window->clear(editor->settings.mainBG);
 					plant.InitAllBranches(t);

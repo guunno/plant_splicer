@@ -49,7 +49,6 @@
     <None Include="Dependencies\SFML\SFML-2.5.1\bin\sfml-window-d-2.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="..\bin\Debug\verdana.ttf" />
     <Font Include="src\Editor\verdana.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
