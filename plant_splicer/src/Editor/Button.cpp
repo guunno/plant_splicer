@@ -20,6 +20,19 @@ void ValueEditButton::PointButton(int& pointer)
 	intVal = &pointer;
 };
 
+
+void StringEditButton::InitButton(sf::String name, int buttonIndex)
+{
+	yPos = buttonIndex % 15;
+	page = floor(buttonIndex / 15);
+	label = name;
+};
+void StringEditButton::PointButton(sf::String& pointer)
+{
+	value = &pointer;
+};
+
+
 void SoloBranchGenomeButtonManager::ActivateButton(int mouseY, int currPage)
 {
 	// there is an offset for space for something at the top, could be anything :/
@@ -108,6 +121,95 @@ void SoloBranchGenomeButtonManager::ProcessInput(sf::Keyboard::Key key)
 	if (key == sf::Keyboard::Period)
 	{
 		if(stringifiedNum.find(".") == sf::String::InvalidPos)
+			stringifiedNum += ".";
+		return;
+	}
+
+	if (key == sf::Keyboard::Dash)
+	{
+		if (stringifiedNum.find("-") == sf::String::InvalidPos)
+			stringifiedNum.insert(0, "-");
+		return;
+	}
+
+	if (key >= 26 && key <= 35)
+		stringifiedNum += char('0' + (key - 26));
+}
+
+void SettingsButtonManager::ProcessInput(sf::Keyboard::Key key)
+{
+	if (key == sf::Keyboard::Enter)
+	{
+		if (!activeButton) return;
+		bool hasDecimal = false;
+		float num = 0;
+		if (stringifiedNum.find(".") == sf::String::InvalidPos)
+		{
+			hasDecimal = false;
+		}
+		else
+		{
+			hasDecimal = true;
+		}
+
+		bool positive = true;
+		if (stringifiedNum.find("-") != sf::String::InvalidPos)
+		{
+			positive = false;
+			stringifiedNum[0] = '0';
+		}
+
+		if (!hasDecimal)
+		{
+			for (int i = 0; i < stringifiedNum.getSize(); i++)
+			{
+				num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
+			}
+			if (activeButton->floorToInt)
+			{
+				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
+			}
+			else
+			{
+				*activeButton->floatVal = num * (((int)positive * 2) - 1);
+			}
+		}
+		else
+		{
+			bool beforeDecimal = false;
+			for (int i = 0; i < stringifiedNum.getSize(); i++)
+			{
+				if (stringifiedNum[i] == '.')
+				{
+					beforeDecimal = true;
+					continue;
+				}
+				if (beforeDecimal)
+				{
+					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
+				}
+				else
+				{
+					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 2);
+				}
+			}
+			num /= pow(10, (stringifiedNum.getSize() - stringifiedNum.find(".") - 1));
+			if (activeButton->floorToInt)
+			{
+				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
+			}
+			else
+			{
+				*activeButton->floatVal = num * (((int)positive * 2) - 1);
+			}
+		}
+		stringifiedNum = "";
+		activeButton = nullptr;
+	}
+
+	if (key == sf::Keyboard::Period)
+	{
+		if (stringifiedNum.find(".") == sf::String::InvalidPos)
 			stringifiedNum += ".";
 		return;
 	}
@@ -231,91 +333,43 @@ void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
 	}
 };
 
-void SettingsButtonManager::ProcessInput(sf::Keyboard::Key key)
+void SplicingButtonManager::LinkButtons(SplicingSettings& editor)
 {
-	if (key == sf::Keyboard::Enter)
+	buttons[0].InitButton("LoadPath", 0);
+	buttons[0].PointButton(editor.loadPath);
+	buttons[1].InitButton("SpliceGenome0Path", 1);
+	buttons[1].PointButton(editor.splice0Path);
+	buttons[2].InitButton("SpliceGenome1Path", 2);
+	buttons[2].PointButton(editor.splice1Path);
+}
+
+void SplicingButtonManager::ActivateButton(int mouseY, int currPage)
+{
+	// there is an offset for space for something at the top, could be anything :/
+	int selectedRow = floor(mouseY / 30);
+	selectedRow -= 2;
+	if (selectedRow >= 0 && selectedRow < 3)
 	{
-		if (!activeButton) return;
-		bool hasDecimal = false;
-		float num = 0;
-		if (stringifiedNum.find(".") == sf::String::InvalidPos)
-		{
-			hasDecimal = false;
-		}
-		else
-		{
-			hasDecimal = true;
-		}
-
-		bool positive = true;
-		if (stringifiedNum.find("-") != sf::String::InvalidPos)
-		{
-			positive = false;
-			stringifiedNum[0] = '0';
-		}
-
-		if (!hasDecimal)
-		{
-			for (int i = 0; i < stringifiedNum.getSize(); i++)
-			{
-				num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
-			}
-			if (activeButton->floorToInt)
-			{
-				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
-			}
-			else
-			{
-				*activeButton->floatVal = num * (((int)positive * 2) - 1);
-			}
-		}
-		else
-		{
-			bool beforeDecimal = false;
-			for (int i = 0; i < stringifiedNum.getSize(); i++)
-			{
-				if (stringifiedNum[i] == '.')
-				{
-					beforeDecimal = true;
-					continue;
-				}
-				if (beforeDecimal)
-				{
-					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
-				}
-				else
-				{
-					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 2);
-				}
-			}
-			num /= pow(10, (stringifiedNum.getSize() - stringifiedNum.find(".") - 1));
-			if (activeButton->floorToInt)
-			{
-				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
-			}
-			else
-			{
-				*activeButton->floatVal = num * (((int)positive * 2) - 1);
-			}
-		}
 		stringifiedNum = "";
-		activeButton = nullptr;
+		if (buttons[selectedRow].page != currPage)
+			return;
+		activeButton = &buttons[selectedRow];
 	}
+};
 
-	if (key == sf::Keyboard::Period)
+void SplicingButtonManager::ProcessInput(char key)
+{
+	if (activeButton)
 	{
-		if (stringifiedNum.find(".") == sf::String::InvalidPos)
-			stringifiedNum += ".";
-		return;
-	}
+		if (key == sf::Keyboard::Enter)
+		{
+			*activeButton->value = stringifiedNum;
+			stringifiedNum = "";
+			activeButton = nullptr;
 
-	if (key == sf::Keyboard::Dash)
-	{
-		if (stringifiedNum.find("-") == sf::String::InvalidPos)
-			stringifiedNum.insert(0, "-");
-		return;
-	}
+			return;
+		}
 
-	if (key >= 26 && key <= 35)
-		stringifiedNum += char('0' + (key - 26));
+		stringifiedNum += key;
+	}
 }

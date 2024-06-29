@@ -23,7 +23,21 @@ public:
 
 };
 
-class SoloBranchGenomeButtonManager
+class StringEditButton
+{
+public:
+	sf::String* value;
+	int yPos = 0;
+	int page = 0;
+	sf::String label;
+
+	void InitButton(sf::String name, int buttonIndex);
+	void PointButton(sf::String& pointer);
+
+};
+
+
+class SoloBranchGenomeButtonManager 
 {
 public:
 	Buffer<ValueEditButton> buttons{NUM_GENES_IN_BRANCH};
@@ -41,7 +55,14 @@ struct Settings
 	FloatColour mainBG{ sf::Color::Black };
 };
 
-class SettingsButtonManager
+struct SplicingSettings
+{
+	sf::String loadPath;
+	sf::String splice0Path;
+	sf::String splice1Path;
+};
+
+class SettingsButtonManager 
 {
 public:
 	Buffer<ValueEditButton> buttons{6};
@@ -51,4 +72,16 @@ public:
 	void LinkButtons(Settings& editor);
 	void ActivateButton(int mouseX, int currPage);
 	void ProcessInput(sf::Keyboard::Key key);
+};
+
+class SplicingButtonManager
+{
+public:
+	Buffer<StringEditButton> buttons{ 3 };
+	StringEditButton* activeButton = nullptr;
+	sf::String stringifiedNum = "";
+
+	void LinkButtons(SplicingSettings& editor);
+	void ActivateButton(int mouseX, int currPage);
+	void ProcessInput(char key);
 };

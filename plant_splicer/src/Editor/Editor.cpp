@@ -15,6 +15,7 @@ void Editor::Create()
 		managers[i].LinkButtons(branchGenomes[i]);
 	}
 	settingsManager.LinkButtons(settings);
+	splicingManager.LinkButtons(splicingSettings);
 }
 
 void Editor::DeActivateAll()
@@ -26,6 +27,23 @@ void Editor::DeActivateAll()
 	}
 	settingsManager.activeButton = nullptr;
 	settingsManager.stringifiedNum = "";
+	splicingManager.activeButton = nullptr;
+	splicingManager.stringifiedNum = "";
+}
+
+bool Editor::IsAnythingActive()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		if (managers[i].activeButton)
+		{
+			return true;
+		}
+	}
+	if (settingsManager.activeButton || splicingManager.activeButton)
+	{
+		return true;
+	}
 }
 
 void Editor::Process()
@@ -37,14 +55,27 @@ void Editor::Process()
 	sf::Event ev;
 	while(m_window->pollEvent(ev))
 	{
+		if (!IsAnythingActive())
+		{
+			if (ev.key.code == sf::Keyboard::S)
+			{
+				m_FileManager.SaveGenomes(branchGenomes);
+			}
+			if (ev.key.code == sf::Keyboard::L)
+			{
+				m_FileManager.LoadGenomes(branchGenomes, splicingSettings.loadPath);
+			}
+		}
 		if (mode != Menu)
 		{
 			if (ev.type == sf::Event::KeyPressed)
+			{
 				if (ev.key.code == sf::Keyboard::Escape)
 				{
 					mode = Menu;
 					DeActivateAll();
 				}
+			}
 		}
 
 		if(mode == BranchEditor)
@@ -84,18 +115,13 @@ void Editor::Process()
 				}
 			}
 		}
-		if (mode == Constants)
+		if (mode == Constants || mode == Splicing)
 		{
-			if (ev.type == sf::Event::MouseButtonPressed && m_window->hasFocus())
-			{
-				settingsManager.ActivateButton((sf::Mouse::getPosition() - m_window->getPosition()).y + (30 * 15 * currPage), currPage);
-			}
 			if (ev.type == sf::Event::KeyPressed)
 			{
-				settingsManager.ProcessInput(ev.key.code);
 				if (ev.key.code == sf::Keyboard::Up)
 				{
-					if (currPage < 1)
+					if (currPage < 0)
 						currPage += 1;
 					DeActivateAll();
 				}
@@ -106,6 +132,34 @@ void Editor::Process()
 					DeActivateAll();
 					
 				}
+			}
+		}
+		if (mode == Constants)
+		{
+			if (ev.type == sf::Event::KeyPressed)
+			{
+				settingsManager.ProcessInput(ev.key.code);
+			}
+			if (ev.type == sf::Event::MouseButtonPressed && m_window->hasFocus())
+			{
+				settingsManager.ActivateButton((sf::Mouse::getPosition() - m_window->getPosition()).y + (30 * 15 * currPage), currPage);
+			}
+		}
+		if (mode == Splicing)
+		{
+			if (ev.type == sf::Event::KeyPressed)
+			{
+				if (ev.key.code == sf::Keyboard::Enter)
+					splicingManager.ProcessInput(ev.key.code);
+			}
+			if (ev.type == sf::Event::TextEntered)
+			{
+				if (ev.text.unicode < 128 && ev.text.unicode != 8)
+					splicingManager.ProcessInput(ev.text.unicode);
+			}
+			if (ev.type == sf::Event::MouseButtonPressed && m_window->hasFocus())
+			{
+				splicingManager.ActivateButton((sf::Mouse::getPosition() - m_window->getPosition()).y + (30 * 15 * currPage), currPage);
 			}
 		}
 		if (mode == Menu)
@@ -121,6 +175,11 @@ void Editor::Process()
 				if (280 < mY && mY < 340)
 				{
 					mode = Constants;
+				}
+
+				if (380 < mY && mY < 440)
+				{
+					mode = Splicing;
 				}
 			}
 		}
@@ -145,6 +204,11 @@ void Editor::Process()
 		text.setString("Settings");
 		text.setPosition(250 -
 			(text.getLocalBounds().width / 2), 280);
+		m_window->draw(text);
+
+		text.setString("Splicing/Loading");
+		text.setPosition(250 -
+			(text.getLocalBounds().width / 2), 380);
 		m_window->draw(text);
 	}
 
@@ -226,7 +290,28 @@ void Editor::Process()
 				m_window->draw(text);
 			}
 		}
+	}
+	if (mode == Splicing)
+	{
+		text.setCharacterSize(11);
+		text.setString(sf::String("(Up/Down arrow keys) Page ") + char('0' + currPage + 1) + sf::String("/1"));
+		text.setPosition(250 -
+			(text.getLocalBounds().width / 2), 7);
+		m_window->draw(text);
 
+		text.setCharacterSize(15);
+		for (int i = 0; i < 3; i++)
+		{
+			text.setString(splicingManager.buttons[i].label);
+			text.setPosition(0, (splicingManager.buttons[i].yPos + 1) * 30);
+			m_window->draw(text);
+			std::ostringstream oss;
+			text.setString(*splicingManager.buttons[i].value);
+			if (splicingManager.activeButton == &splicingManager.buttons[i])
+				text.setString(splicingManager.stringifiedNum);
+			text.setPosition(250, (splicingManager.buttons[i].yPos + 1) * 30);
+			m_window->draw(text);
+		}
 	}
 	m_window->display();
 };
