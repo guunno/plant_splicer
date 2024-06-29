@@ -7,4 +7,6 @@ Cherry | ![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/30f4
 Fountain | ![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/f8e29fe8-849a-4769-89c4-521a706539d9)|Unique
 Fluff |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/635747e4-2001-4380-b997-b90f50853178)|Cherry + Fountain
 Cactus |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/48a7daa0-33a5-462b-9537-462e989120bf)|Unique
+Thorns |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/68f4fd79-be9b-40a8-8284-8c214c82d664)|Cactus + Fluff
+
 
