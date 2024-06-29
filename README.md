@@ -2,6 +2,10 @@
 Mix and match plant genetics to create beautiful images!
 
 # Tips
+- Press the escape key to go back to menu
+- The editor closes with the main render window
+- Dont mess up the I and O keys! (I is for loading, O is for saving)
+- Rename .genome files when they are created
 - When splicing, try to use plants that make use of a similar number of genomes
 - Use more genomes
 - Try to avoid negative colour change values, can lead to strange colours when splicing
