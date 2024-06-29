@@ -8,7 +8,7 @@ void Editor::Create()
 {
 	m_window = std::make_unique<sf::RenderWindow>();
 	m_window->create(sf::VideoMode(500, 470), "Editor", sf::Style::Titlebar);
-	font.loadFromFile("src/Editor/verdana.ttf");
+	font.loadFromFile("verdana.ttf");
 	text.setFont(font);
 	text.setString("Editor");
 	for (int i = 0; i < 10; i++)
