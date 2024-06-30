@@ -97,7 +97,65 @@ void FileManager::ShuffleGenome(BranchGenome gene0, BranchGenome gene1, BranchGe
     SHUFFLE(widthAdoption);
     SHUFFLE(dirAdoption);
 
+<<<<<<< HEAD
 #undef SHUFFLE
+=======
+    if (rand() % 2)
+        out.rBranch2 = gene0.rBranch2;
+    else
+        out.rBranch2 = gene1.rBranch2;
+
+    if (rand() % 2)
+        out.colourChange.r = gene0.colourChange.r;
+    else
+        out.colourChange.r = gene1.colourChange.r;
+
+    if (rand() % 2)
+        out.colourChange.g = gene0.colourChange.g;
+    else
+        out.colourChange.g = gene1.colourChange.g;
+
+    if (rand() % 2)
+        out.colourChange.b = gene0.colourChange.b;
+    else
+        out.colourChange.b = gene1.colourChange.b;
+
+    if (rand() % 2)
+        out.widthChange = gene0.widthChange;
+    else
+        out.widthChange = gene1.widthChange;
+
+    if (rand() % 2)
+        out.dirChange = gene0.dirChange;
+    else
+        out.dirChange = gene1.dirChange;
+
+    if (rand() % 2)
+        out.randTurn = gene0.randTurn;
+    else
+        out.randTurn = gene1.randTurn;
+
+    out.branch0Position = (rand() % 2) ? gene0.branch0Position : gene1.branch0Position;
+    out.branch1Position = (rand() % 2) ? gene0.branch1Position : gene1.branch1Position;
+    out.branch2Position = (rand() % 2) ? gene0.branch2Position : gene1.branch2Position;
+    out.branch3Position = (rand() % 2) ? gene0.branch3Position : gene1.branch3Position;
+    out.branch4Position = (rand() % 2) ? gene0.branch4Position : gene1.branch4Position;
+    out.branch5Position = (rand() % 2) ? gene0.branch5Position : gene1.branch5Position;
+
+    out.initDir = (rand() % 2) ? gene0.initDir : gene1.initDir;
+    out.dirSpread = (rand() % 2) ? gene0.dirSpread : gene1.dirSpread;
+    out.spreadMaxDistanceEff = (rand() % 2) ? gene0.spreadMaxDistanceEff : gene1.spreadMaxDistanceEff;
+
+    out.initColour = (rand() % 2) ? gene0.initColour : gene1.initColour;
+
+    out.initWidth = (rand() % 2) ? gene0.initWidth : gene1.initWidth;
+    out.length = (rand() % 2) ? gene0.length : gene1.length;
+    out.lengthVariation = (rand() % 2) ? gene0.lengthVariation : gene1.lengthVariation;
+
+    out.colourAdoption = (rand() % 2) ? gene0.colourAdoption : gene1.colourAdoption;
+    out.widthAdoption = (rand() % 2) ? gene0.widthAdoption : gene1.widthAdoption;
+    out.dirAdoption = (rand() % 2) ? gene0.dirAdoption : gene1.dirAdoption;
+>>>>>>> 22c02b4cca6730e2f83c3fd7e8b494e470550904
 }
 
 void FileManager::CreateSplicedPlant(sf::String string0, sf::String string1, unsigned int randomSeed, Buffer<BranchGenome>& splicedPlant)
