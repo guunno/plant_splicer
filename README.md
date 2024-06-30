@@ -10,6 +10,10 @@ Cactus |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/48a7d
 Thorns |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/68f4fd79-be9b-40a8-8284-8c214c82d664)|Cactus + Fluff
 Lily |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/48ee87ad-07bc-4ce5-895e-5faed5e94db2)|Unique
 Banana squares |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/cfdaaf30-0b69-4fb2-b0d6-8f29a7f252ea)| Lily + Cactus
+Flake |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/d21e47ce-67c8-4621-a336-d7627ca62811)| Unique
+Dandelion |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/eaa9719f-1750-4305-bd55-6df7d1f3c6a4)| (Modded) Flake + Cherry
+
+
 
 
 
