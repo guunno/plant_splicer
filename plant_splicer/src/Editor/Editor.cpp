@@ -282,12 +282,14 @@ void Editor::RenderConstants()
 		text.setPosition(0, (settingsManager.buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
 
-		if (settingsManager.activeButton == &settingsManager.buttons[i])
-			text.setString(settingsManager.stringifiedNum);
-		else if (settingsManager.buttons[i].floorToInt)
-			text.setString(std::to_string(*settingsManager.buttons[i].intVal));
+		std::ostringstream oss;
+		if (managers[currBranch].activeButton == &managers[currBranch].buttons[i])
+			text.setString(managers[currBranch].stringifiedNum);
+		else if (managers[currBranch].buttons[i].floorToInt)
+			oss << *settingsManager.buttons[i].intVal;
 		else
-			text.setString(std::to_string(*settingsManager.buttons[i].floatVal));
+			oss << *settingsManager.buttons[i].floatVal;
+		text.setString(oss.str());
 
 		text.setPosition(250, (settingsManager.buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
