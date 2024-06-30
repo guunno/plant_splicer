@@ -59,11 +59,11 @@ void Editor::Process()
 			{
 				switch (ev.key.code)
 				{
-				case sf::Keyboard::O:
+				case sf::Keyboard::W:
 					m_FileManager.SaveGenomes(branchGenomes);
 					break;
 
-				case sf::Keyboard::I:
+				case sf::Keyboard::L:
 					m_FileManager.LoadGenomes(branchGenomes, splicingSettings.loadPath);
 					break;
 
@@ -113,7 +113,7 @@ void Editor::Process()
 					break;
 
 				case sf::Keyboard::Down:
-					if (currPage < 2)
+					if (currPage < 3)
 						currPage += 1;
 					DeActivateAll();
 					break;
@@ -321,7 +321,7 @@ void Editor::RenderSplicing()
 	text.setPosition(250 - (text.getLocalBounds().width / 2), 300);
 	m_window->draw(text);
 
-	text.setString("I-Load/O-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
+	text.setString("L-Load/W-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
 	text.setPosition(250 - (text.getLocalBounds().width / 2), 350);
 	m_window->draw(text);
 
