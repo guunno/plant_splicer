@@ -250,12 +250,14 @@ void Editor::RenderBranchEditor()
 		text.setPosition(0, (managers[currBranch].buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
 
+		std::ostringstream oss;
 		if (managers[currBranch].activeButton == &managers[currBranch].buttons[i])
 			text.setString(managers[currBranch].stringifiedNum);
 		else if (managers[currBranch].buttons[i].floorToInt)
-			text.setString(std::to_string(*managers[currBranch].buttons[i].intVal));
+			oss << *settingsManager.buttons[i].intVal;
 		else
-			text.setString(std::to_string(*managers[currBranch].buttons[i].floatVal));
+			oss << *settingsManager.buttons[i].floatVal;
+		text.setString(oss.str());
 
 		text.setPosition(250, (managers[currBranch].buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
