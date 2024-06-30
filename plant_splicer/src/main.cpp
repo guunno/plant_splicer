@@ -3,9 +3,12 @@
 #include "Plant.h"
 #include "Editor/Editor.h"
 #include <chrono>
-#include <iostream>
 
 #include <memory>
+
+#ifdef DIST
+#define main WinMain
+#endif
 
 int main()
 {

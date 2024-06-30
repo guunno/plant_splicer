@@ -1,46 +1,33 @@
 #include "FileManager.h"
 #include <fstream>
-#include <iostream>
 #include <chrono>
-#include <sstream>
+#include <string>
 
 bool FileManager::SaveGenomes(Buffer<BranchGenome>& data)
 {
-
 	std::string str;
-	std::stringstream strstr;
-	unsigned int t = std::chrono::system_clock::now().time_since_epoch().count();
-	strstr << t;
-	strstr >> str;
-	str += ".genome";
+	str += std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".genome";
 	std::ofstream file(str, std::ios::out | std::ios::binary);
 
 	if (!file.good())
-	{
 		return false;
-	}
 
-	for (int i = 0; i < 10; i++)
-	{
-		file.write((char*)&data[i], sizeof(BranchGenome));
-	}
+    file.write((char*)&data[0], sizeof(BranchGenome) * data.Size());
+
 	file.close();
     return true;
 }
 
-bool FileManager::LoadGenomes(Buffer<BranchGenome>& loadPos, sf::String path)
+bool FileManager::LoadGenomes(Buffer<BranchGenome>& outputData, sf::String path)
 {
 	std::ifstream file(path.toAnsiString(), std::ios::out | std::ios::binary);
 
 	if (!file.good())
-	{
 		return false;
-	}
 
-	for (int i = 0; i < 10; i++)
-	{
-		file.read((char*)&loadPos[i], sizeof(BranchGenome));
-	}
+    file.read((char*)&outputData[0], sizeof(BranchGenome) * outputData.Size());
+
+    file.close();
     return true;
 }
 
@@ -48,152 +35,69 @@ void FileManager::CheckGenomeReferences(bool* list, uint8_t recursionDepth, Buff
 {
     if (recursionDepth >= 5) return;
 
-    if (bg[index].branch0 >= 0 && bg[index].branch0 < 10 && !list[bg[index].branch0])
-    {
-        list[bg[index].branch0] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].branch1 >= 0 && bg[index].branch1 < 10 && !list[bg[index].branch1])
-    {
-        list[bg[index].branch1] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].branch2 >= 0 && bg[index].branch2 < 10 && !list[bg[index].branch2])
-    {
-        list[bg[index].branch2] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].branch3 >= 0 && bg[index].branch3 < 10 && !list[bg[index].branch3])
-    {
-        list[bg[index].branch3] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].branch4 >= 0 && bg[index].branch4 < 10 && !list[bg[index].branch4])
-    {
-        list[bg[index].branch4] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].branch5 >= 0 && bg[index].branch5 < 10 && !list[bg[index].branch5])
-    {
-        list[bg[index].branch5] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].rBranch0 >= 0 && bg[index].rBranch0 < 10 && !list[bg[index].rBranch0])
-    {
-        list[bg[index].rBranch0] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].rBranch1 >= 0 && bg[index].rBranch1 < 10 && !list[bg[index].rBranch1])
-    {
-        list[bg[index].rBranch1] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
-    if (bg[index].rBranch2 >= 0 && bg[index].rBranch2 < 10 && !list[bg[index].rBranch2])
-    {
-        list[bg[index].rBranch2] = true;
-        CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);
-    }
+#define CheckGenomeRef(attr) if (bg[index].attr >= 0 && bg[index].attr < 10 && !list[bg[index].attr]) {\
+  list[bg[index].attr] = true; CheckGenomeReferences(list, recursionDepth + 1, bg, index + 1);}
+
+    CheckGenomeRef(branch0);
+    CheckGenomeRef(branch1);
+    CheckGenomeRef(branch2);
+    CheckGenomeRef(branch3);
+    CheckGenomeRef(branch4);
+    CheckGenomeRef(branch5);
+
+    CheckGenomeRef(rBranch0);
+    CheckGenomeRef(rBranch1);
+    CheckGenomeRef(rBranch2);
+
+#undef CheckGenomeRef
 }
 
 void FileManager::ShuffleGenome(BranchGenome gene0, BranchGenome gene1, BranchGenome& out)
 {
-    if (rand() % 2)
-        out.branch0 = gene0.branch0;
-    else
-        out.branch0 = gene1.branch0;
+#define SHUFFLE(attr) out.attr = (rand() % 2 == 0) ? gene0.attr : gene1.attr
 
-    if (rand() % 2)
-        out.branch1 = gene0.branch1;
-    else
-        out.branch1 = gene1.branch1;
+    SHUFFLE(branch0);
+    SHUFFLE(branch1);
+    SHUFFLE(branch2);
+    SHUFFLE(branch3);
+    SHUFFLE(branch4);
+    SHUFFLE(branch5);
 
-    if (rand() % 2)
-        out.branch2 = gene0.branch2;
-    else
-        out.branch2 = gene1.branch2;
+    SHUFFLE(rBranch0);
+    SHUFFLE(rBranch1);
+    SHUFFLE(rBranch2);
+    SHUFFLE(colourChange.r);
+    SHUFFLE(colourChange.g);
+    SHUFFLE(colourChange.b);
+   
+    SHUFFLE(widthChange);
+    SHUFFLE(dirChange);
+    SHUFFLE(randTurn);
 
-    if (rand() % 2)
-        out.branch3 = gene0.branch3;
-    else
-        out.branch3 = gene1.branch3;
+    SHUFFLE(branch0Position);
+    SHUFFLE(branch1Position);
+    SHUFFLE(branch2Position);
+    SHUFFLE(branch3Position);
+    SHUFFLE(branch4Position);
+    SHUFFLE(branch5Position);
 
-    if (rand() % 2)
-        out.branch4 = gene0.branch4;
-    else
-        out.branch4 = gene1.branch4;
+    SHUFFLE(initDir);
+    SHUFFLE(dirSpread);
+    SHUFFLE(spreadMaxDistanceEff);
 
-    if (rand() % 2)
-        out.branch5 = gene0.branch5;
-    else
-        out.branch5 = gene1.branch5;
+    SHUFFLE(initColour.r);
+    SHUFFLE(initColour.g);
+    SHUFFLE(initColour.b);
 
-    if (rand() % 2)
-        out.rBranch0 = gene0.rBranch0;
-    else
-        out.rBranch0 = gene1.rBranch0;
+    SHUFFLE(initWidth);
+    SHUFFLE(length);
+    SHUFFLE(lengthVariation);
 
-    if (rand() % 2)
-        out.rBranch1 = gene0.rBranch1;
-    else
-        out.rBranch1 = gene1.rBranch1;
+    SHUFFLE(colourAdoption);
+    SHUFFLE(widthAdoption);
+    SHUFFLE(dirAdoption);
 
-    if (rand() % 2)
-        out.rBranch2 = gene0.rBranch2;
-    else
-        out.rBranch2 = gene1.rBranch2;
-
-    if (rand() % 2)
-        out.colourChange.r = gene0.colourChange.r;
-    else
-        out.colourChange.r = gene1.colourChange.r;
-
-    if (rand() % 2)
-        out.colourChange.g = gene0.colourChange.g;
-    else
-        out.colourChange.g = gene1.colourChange.g;
-
-    if (rand() % 2)
-        out.colourChange.b = gene0.colourChange.b;
-    else
-        out.colourChange.b = gene1.colourChange.b;
-
-    if (rand() % 2)
-        out.widthChange = gene0.widthChange;
-    else
-        out.widthChange = gene1.widthChange;
-
-    if (rand() % 2)
-        out.dirChange = gene0.dirChange;
-    else
-        out.dirChange = gene1.dirChange;
-
-    if (rand() % 2)
-        out.randTurn = gene0.randTurn;
-    else
-        out.randTurn = gene1.randTurn;
-
-    out.branch0Position = (rand() % 2) ? gene0.branch0Position : gene1.branch0Position;
-    out.branch1Position = (rand() % 2) ? gene0.branch1Position : gene1.branch1Position;
-    out.branch2Position = (rand() % 2) ? gene0.branch2Position : gene1.branch2Position;
-    out.branch3Position = (rand() % 2) ? gene0.branch3Position : gene1.branch3Position;
-    out.branch4Position = (rand() % 2) ? gene0.branch4Position : gene1.branch4Position;
-    out.branch5Position = (rand() % 2) ? gene0.branch5Position : gene1.branch5Position;
-
-    out.initDir = (rand() % 2) ? gene0.initDir : gene1.initDir;
-    out.dirSpread = (rand() % 2) ? gene0.dirSpread : gene1.dirSpread;
-    out.spreadMaxDistanceEff = (rand() % 2) ? gene0.spreadMaxDistanceEff : gene1.spreadMaxDistanceEff;
-
-    out.initColour.r = (rand() % 2) ? gene0.initColour.r : gene1.initColour.r;
-    out.initColour.g = (rand() % 2) ? gene0.initColour.g : gene1.initColour.g;
-    out.initColour.b = (rand() % 2) ? gene0.initColour.b : gene1.initColour.b;
-
-    out.initWidth = (rand() % 2) ? gene0.initWidth : gene1.initWidth;
-    out.length = (rand() % 2) ? gene0.length : gene1.length;
-    out.lengthVariation = (rand() % 2) ? gene0.lengthVariation : gene1.lengthVariation;
-
-    out.colourAdoption = (rand() % 2) ? gene0.colourAdoption : gene1.colourAdoption;
-    out.widthAdoption = (rand() % 2) ? gene0.widthAdoption : gene1.widthAdoption;
-    out.dirAdoption = (rand() % 2) ? gene0.dirAdoption : gene1.dirAdoption;
+#undef SHUFFLE
 }
 
 void FileManager::CreateSplicedPlant(sf::String string0, sf::String string1, unsigned int randomSeed, Buffer<BranchGenome>& splicedPlant)

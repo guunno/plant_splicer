@@ -21,7 +21,7 @@ public:
 	Settings settings;
 	SplicingSettings splicingSettings;
 
-	enum Mode {Menu, BranchEditor, Constants, Splicing};
+	enum Mode { Menu = 0, BranchEditor, Constants, Splicing };
 
 	Mode mode = Menu;
 
@@ -30,6 +30,13 @@ public:
 	bool IsAnythingActive();
 	
 	void Process();
+
+private:
+	void RenderMenu();
+	void RenderBranchEditor();
+	void RenderConstants();
+	void RenderSplicing();
+
 private:
 	FileManager m_FileManager;
 };
