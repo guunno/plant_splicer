@@ -323,10 +323,6 @@ void Editor::RenderSplicing()
 	text.setPosition(250 - (text.getLocalBounds().width / 2), 300);
 	m_window->draw(text);
 
-	text.setString("I-Load/O-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
-	text.setPosition(250 - (text.getLocalBounds().width / 2), 350);
-	m_window->draw(text);
-
 	m_window->display();
 }
 
