@@ -84,6 +84,7 @@ void Editor::Process()
 					mode = Menu;
 					DeActivateAll();
 				}
+				currPage = 0;
 			}
 		}
 
