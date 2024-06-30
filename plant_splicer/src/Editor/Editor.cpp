@@ -82,8 +82,8 @@ void Editor::Process()
 				{
 					mode = Menu;
 					DeActivateAll();
+					currPage = 0;
 				}
-				currPage = 0;
 			}
 		}
 
@@ -113,14 +113,16 @@ void Editor::Process()
 					break;
 
 				case sf::Keyboard::Down:
-					if (currPage < 3)
-						currPage += 1;
+					if (currPage < 15)
+					{
+						currPage++;
+					}
 					DeActivateAll();
 					break;
 
 				case sf::Keyboard::Up:
 					if (currPage > 0)
-						currPage -= 1;
+						currPage--;
 					DeActivateAll();
 					break;
 				}
