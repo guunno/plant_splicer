@@ -113,7 +113,7 @@ void Editor::Process()
 					break;
 
 				case sf::Keyboard::Down:
-					if (currPage < 15)
+					if (currPage < 2)
 					{
 						currPage++;
 					}
