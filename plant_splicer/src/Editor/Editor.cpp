@@ -250,14 +250,12 @@ void Editor::RenderBranchEditor()
 		text.setPosition(0, (managers[currBranch].buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
 
-		std::ostringstream oss;
 		if (managers[currBranch].activeButton == &managers[currBranch].buttons[i])
 			text.setString(managers[currBranch].stringifiedNum);
 		else if (managers[currBranch].buttons[i].floorToInt)
-			oss << *settingsManager.buttons[i].intVal;
+			text.setString(std::to_string(*managers[currBranch].buttons[i].intVal));
 		else
-			oss << *settingsManager.buttons[i].floatVal;
-		text.setString(oss.str());
+			text.setString(std::to_string(*managers[currBranch].buttons[i].floatVal));
 
 		text.setPosition(250, (managers[currBranch].buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
@@ -282,14 +280,12 @@ void Editor::RenderConstants()
 		text.setPosition(0, (settingsManager.buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
 
-		std::ostringstream oss;
-		if (managers[currBranch].activeButton == &managers[currBranch].buttons[i])
-			text.setString(managers[currBranch].stringifiedNum);
-		else if (managers[currBranch].buttons[i].floorToInt)
-			oss << *settingsManager.buttons[i].intVal;
+		if (settingsManager.activeButton == &settingsManager.buttons[i])
+			text.setString(settingsManager.stringifiedNum);
+		else if (settingsManager.buttons[i].floorToInt)
+			text.setString(std::to_string(*settingsManager.buttons[i].intVal));
 		else
-			oss << *settingsManager.buttons[i].floatVal;
-		text.setString(oss.str());
+			text.setString(std::to_string(*settingsManager.buttons[i].floatVal));
 
 		text.setPosition(250, (settingsManager.buttons[i].yPos + 1) * 30);
 		m_window->draw(text);
@@ -325,7 +321,7 @@ void Editor::RenderSplicing()
 	text.setPosition(250 - (text.getLocalBounds().width / 2), 300);
 	m_window->draw(text);
 
-	text.setString("L-Load/W-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
+	text.setString("I-Load/O-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
 	text.setPosition(250 - (text.getLocalBounds().width / 2), 350);
 	m_window->draw(text);
 
