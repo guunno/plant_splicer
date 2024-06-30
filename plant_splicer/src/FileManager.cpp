@@ -183,9 +183,7 @@ void FileManager::ShuffleGenome(BranchGenome gene0, BranchGenome gene1, BranchGe
     out.dirSpread = (rand() % 2) ? gene0.dirSpread : gene1.dirSpread;
     out.spreadMaxDistanceEff = (rand() % 2) ? gene0.spreadMaxDistanceEff : gene1.spreadMaxDistanceEff;
 
-    out.initColour.r = (rand() % 2) ? gene0.initColour.r : gene1.initColour.r;
-    out.initColour.g = (rand() % 2) ? gene0.initColour.g : gene1.initColour.g;
-    out.initColour.b = (rand() % 2) ? gene0.initColour.b : gene1.initColour.b;
+    out.initColour = (rand() % 2) ? gene0.initColour : gene1.initColour;
 
     out.initWidth = (rand() % 2) ? gene0.initWidth : gene1.initWidth;
     out.length = (rand() % 2) ? gene0.length : gene1.length;
