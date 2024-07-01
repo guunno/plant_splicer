@@ -13,6 +13,8 @@ Banana squares |![plant](https://github.com/Wurnace/plant_splicer/assets/1223872
 Flake |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/d21e47ce-67c8-4621-a336-d7627ca62811)| Unique
 Dandelion |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/eaa9719f-1750-4305-bd55-6df7d1f3c6a4)| (Modded) Flake + Cherry
 Fire |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/aac81a63-d509-4903-a77a-5c4952355e5b)| Unique
+Spark |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/eebfb10a-f667-4dd4-bc8d-fe708d3d0a6f)| Lily + Fire
+
 
 
 
