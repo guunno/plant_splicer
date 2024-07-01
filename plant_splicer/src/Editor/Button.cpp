@@ -317,6 +317,8 @@ void SettingsButtonManager::LinkButtons(Settings& editor)
 	buttons[4].PointButton(editor.editorBG.g);
 	buttons[5].InitButton("EditorColourB", 5);
 	buttons[5].PointButton(editor.editorBG.b);
+	buttons[6].InitButton("Zoom", 6);
+	buttons[6].PointButton(editor.zoom);
 }
 
 void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
@@ -324,7 +326,7 @@ void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
 	// there is an offset for space for something at the top, could be anything :/
 	int selectedRow = floor(mouseY / 30);
 	selectedRow -= 2;
-	if (selectedRow >= 0 && selectedRow < 6)
+	if (selectedRow >= 0 && selectedRow < 7)
 	{
 		stringifiedNum = "";
 		if (buttons[selectedRow].page != currPage)

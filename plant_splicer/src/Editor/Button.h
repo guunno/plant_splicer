@@ -52,8 +52,7 @@ struct Settings
 {
 	FloatColour editorBG{ 2, 0, 5 };
 	FloatColour mainBG{ sf::Color::Black };
-
-	sf::String notification = "";
+	float zoom{1};
 };
 
 struct SplicingSettings
@@ -66,7 +65,7 @@ struct SplicingSettings
 class SettingsButtonManager 
 {
 public:
-	Buffer<ValueEditButton> buttons{6};
+	Buffer<ValueEditButton> buttons{7};
 	ValueEditButton* activeButton = nullptr;
 	sf::String stringifiedNum = "";
 

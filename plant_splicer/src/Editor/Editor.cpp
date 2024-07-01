@@ -273,7 +273,7 @@ void Editor::RenderConstants()
 	m_window->draw(text);
 
 	text.setCharacterSize(15);
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		if (settingsManager.buttons[i].page != currPage)
 			continue;

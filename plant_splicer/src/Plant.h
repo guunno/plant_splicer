@@ -58,7 +58,7 @@ public:
 	Branch() {}
 	Branch(BranchGenome& genomeData, Branch* parentBranch = nullptr);
 	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr, int gIdx = 0, int chInd = 0);
-	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, uint32_t recursionDepth = 0) const;
+	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, float zoom = 1, uint32_t recursionDepth = 0) const;
 
 public:
 	BranchData data;
@@ -71,7 +71,7 @@ public:
 	Plant() {}
 	Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window);
 
-	void Render();
+	void Render(float zoom = 1);
 	
 public:
 	Vector2 pos;

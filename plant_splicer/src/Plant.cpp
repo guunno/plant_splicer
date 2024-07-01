@@ -92,13 +92,13 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int gIdx, in
 static void RenderBranchSegment(
 	const std::unique_ptr<sf::CircleShape>& circle,
 	Vector2 position, float width, const FloatColour& colour,
-	const std::shared_ptr<sf::RenderWindow>& window
+	const std::shared_ptr<sf::RenderWindow>& window, float zoom = 1
 ) {
-	circle->setRadius(width);
+	circle->setRadius(width * zoom);
 
 	// Light
 	circle->setFillColor(FloatColour{ colour.r + 25, colour.g + 25, colour.b + 25, 10 });
-	circle->setPosition({ position.x - 1 - width, position.y - 1 - width });
+	circle->setPosition({ position.x - 1 - (width * zoom), position.y - 1 - (width * zoom) });
 	window->draw(*circle);
 
 	// Shadow
@@ -108,12 +108,12 @@ static void RenderBranchSegment(
 		abs(colour.b - 25) + (colour.b - 25),
 		10
 	));
-	circle->setPosition({ position.x + 1 - width, position.y + 1 - width });
+	circle->setPosition({ position.x + 1 - (width * zoom), position.y + 1 - (width * zoom) });
 	window->draw(*circle);
 
 	// Actual
 	circle->setFillColor(colour);
-	circle->setPosition({ position.x - width, position.y - width });
+	circle->setPosition({ position.x - (width * zoom), position.y - (width * zoom) });
 	window->draw(*circle);
 }
 
@@ -121,7 +121,7 @@ void Branch::RenderBranch(
 	const std::unique_ptr<sf::CircleShape>& circle,
 	const std::shared_ptr<sf::RenderWindow>& window,
 	const Buffer<Branch>& allBranches, 
-	const Branch::Orientation& offset = Branch::Orientation(),
+	const Branch::Orientation& offset = Branch::Orientation(), float zoom,
 	uint32_t recursionDepth
 ) const {
 	FloatColour colour;
@@ -136,18 +136,18 @@ void Branch::RenderBranch(
 	for (int i = 0; i < data.length; i++)
 	{
 		dir += (data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
-		pos += Vector2(0, -1).rotateNew(dir);
-		width += data.widthChange;
+		pos += Vector2(0, -1).rotateNew(dir) * zoom;
+		width += data.widthChange * zoom;
 		colour += data.colourChange;
 
-		RenderBranchSegment(circle, pos, width, colour, window);
+		RenderBranchSegment(circle, pos, width, colour, window, zoom);
 
 		if (recursionDepth < MAX_RECUSION_DEPTH)
 		{
 			for (int j = 0; j < 6; j++)
 			{
 				if (i == data.branchingPoints[j] && data.branchIndexes[j] >= 0)
-					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, recursionDepth + 1);
+					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, zoom, recursionDepth + 1);
 			}
 		}
 		if (recursionDepth == MAX_RECUSION_DEPTH)
@@ -155,7 +155,7 @@ void Branch::RenderBranch(
 			for (int j = 0; j < 3; j++)
 			{
 				if (i == data.length - 1 && data.rBranchIndexes[j] >= 0)
-					allBranches[childIndices[6 + j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, recursionDepth + 1);
+					allBranches[childIndices[6 + j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, zoom, recursionDepth + 1);
 			}
 		}
 	}
@@ -174,12 +174,12 @@ Plant::Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window)
 	InitBranches();
 }
 
-void Plant::Render()
+void Plant::Render(float zoom)
 {
 	m_Branches[0].RenderBranch(
 		(m_BranchRenderShape), window, 
 		m_Branches,
-		Branch::Orientation { pos, 0, FloatColour{ 0, 0, 0 } }
+		Branch::Orientation { pos, 0, FloatColour{ 0, 0, 0 } }, zoom
 	);
 }
 

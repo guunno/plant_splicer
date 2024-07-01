@@ -39,7 +39,7 @@ int main()
 				plant.branchGenes = editor->branchGenomes;
 				t = std::chrono::system_clock::now().time_since_epoch().count();
 				plant.InitAllBranches(t);
-				plant.Render();
+				plant.Render(editor->settings.zoom);
 				window->display();
 			}
 
@@ -49,7 +49,7 @@ int main()
 				{
 					window->clear(editor->settings.mainBG);
 					plant.InitAllBranches(t);
-					plant.Render();
+					plant.Render(editor->settings.zoom);
 					sf::Texture screenShot;
 					screenShot.create(window->getSize().x, window->getSize().y);
 					screenShot.update(*window);
