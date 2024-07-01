@@ -319,10 +319,6 @@ void Editor::RenderSplicing()
 		m_window->draw(text);
 	}
 
-	text.setString("KeyBinds");
-	text.setPosition(250 - (text.getLocalBounds().width / 2), 300);
-	m_window->draw(text);
-
 	m_window->display();
 }
 
