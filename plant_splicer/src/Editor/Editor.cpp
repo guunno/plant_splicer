@@ -67,6 +67,10 @@ void Editor::Process()
 					m_FileManager.LoadGenomes(branchGenomes, splicingSettings.loadPath);
 					break;
 
+				case sf::Keyboard::C:
+					m_FileManager.ConvertLegacy(splicingSettings.loadPath);
+					break;
+
 				case sf::Keyboard::P:
 					m_FileManager.CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
 						std::chrono::system_clock::now().time_since_epoch().count(), branchGenomes);

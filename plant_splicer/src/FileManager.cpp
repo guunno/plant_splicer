@@ -12,9 +12,28 @@ bool FileManager::SaveGenomes(Buffer<BranchGenome>& data)
 	if (!file.good())
 		return false;
 
+    uint32_t sizeOfGenome = sizeof(BranchGenome);
+
+    file.write((char*)&sizeOfGenome, sizeof(uint32_t));
     file.write((char*)&data[0], sizeof(BranchGenome) * data.Size());
 
 	file.close();
+    return true;
+}
+
+bool FileManager::SaveGenomes(Buffer<BranchGenome>& data, sf::String path)
+{
+    std::ofstream file(path.toAnsiString(), std::ios::out | std::ios::binary);
+
+    if (!file.good())
+        return false;
+
+    uint32_t sizeOfGenome = sizeof(BranchGenome);
+
+    file.write((char*)&sizeOfGenome, sizeof(uint32_t));
+    file.write((char*)&data[0], sizeof(BranchGenome) * data.Size());
+
+    file.close();
     return true;
 }
 
@@ -25,9 +44,29 @@ bool FileManager::LoadGenomes(Buffer<BranchGenome>& outputData, sf::String path)
 	if (!file.good())
 		return false;
 
-    file.read((char*)&outputData[0], sizeof(BranchGenome) * outputData.Size());
+    uint32_t sizeOfGenome;
+
+    file.read((char*)&sizeOfGenome, sizeof(uint32_t));
+    for (int i = 0; i < 10; i++)
+        file.read((char*)&outputData[i], sizeOfGenome);
 
     file.close();
+    return true;
+}
+
+bool FileManager::ConvertLegacy(sf::String path)
+{
+    Buffer<BranchGenome> b{ 10 };
+    std::ifstream file(path.toWideString(), std::ios::out | std::ios::binary);
+
+    if (!file.good())
+        return false;
+
+    file.read((char*)&b[0], 1400);
+
+    file.close();
+
+    SaveGenomes(b, path);
     return true;
 }
 
