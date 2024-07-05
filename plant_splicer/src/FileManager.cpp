@@ -47,6 +47,7 @@ bool FileManager::LoadGenomes(Buffer<BranchGenome>& outputData, sf::String path)
     uint32_t sizeOfGenome;
 
     file.read((char*)&sizeOfGenome, sizeof(uint32_t));
+    if (sizeOfGenome < sizeof(BranchGenome));
     for (int i = 0; i < 10; i++)
         file.read((char*)&outputData[i], sizeOfGenome);
 

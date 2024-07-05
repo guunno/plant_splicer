@@ -301,6 +301,13 @@ void SoloBranchGenomeButtonManager::LinkButtons(BranchGenome& linkedGenome)
 	buttons[31].PointButton(linkedGenome.dirSpread);
 	buttons[32].InitButton("SpreadCloseness", 32, true);
 	buttons[32].PointButton(linkedGenome.spreadMaxDistanceEff);
+
+	buttons[33].InitButton("ConBranch0", 33, true);
+	buttons[33].PointButton(linkedGenome.cRBranch0);
+	buttons[34].InitButton("ConBranch0", 34, true);
+	buttons[34].PointButton(linkedGenome.cRBranch1);
+	buttons[35].InitButton("ConBranch2", 35, true);
+	buttons[35].PointButton(linkedGenome.cRBranch2);
 }
 
 void SettingsButtonManager::LinkButtons(Settings& editor)

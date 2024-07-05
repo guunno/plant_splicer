@@ -5,7 +5,7 @@
 #include <SFML/System.hpp>
 #include <map>
 
-#define NUM_GENES_IN_BRANCH 33
+#define NUM_GENES_IN_BRANCH 36
 
 class ValueEditButton
 {

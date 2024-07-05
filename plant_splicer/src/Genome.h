@@ -87,4 +87,8 @@ struct BranchGenome : Genome
 	int rBranch0 = -1; // Branches that only spawn at the end of a recursion limit (e.g if genome 0 creates branch with genome0, it will repeat until it hits the limit),
 	int rBranch1 = -1; // Always stems off the very end of the branch
 	int rBranch2 = -1; // can help reduce genome usage
+
+	int cRBranch0 = -1; // Continuous recursive branch is able to branch again, it works similarly to the rBranch
+	int cRBranch1 = -1; // but the branch that is created can also branch itself another 5 times, like the initial branch.
+	int cRBranch2 = -1; // This allows for more complicated fruits, or flower patterns
 };
