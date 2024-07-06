@@ -94,9 +94,12 @@ void Editor::Process()
 					break;
 
 				case sf::Keyboard::C:
-					std::string path;
-					OpenFilePath(path, FileSearchFilter{ "Tree File (.genome)", "*.genome" });
-					FileManager::ConvertLegacy(path);
+					if (m_Controlling)
+					{
+						std::string path;
+						OpenFilePath(path, FileSearchFilter{ "Tree File (.genome)", "*.genome" });
+						FileManager::ConvertLegacy(path);
+					}
 					break;
 
 				case sf::Keyboard::P:
