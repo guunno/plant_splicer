@@ -15,6 +15,7 @@ Dandelion |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/ea
 Fire |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/aac81a63-d509-4903-a77a-5c4952355e5b)| Unique
 Spark |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/eebfb10a-f667-4dd4-bc8d-fe708d3d0a6f)| Lily + Fire
 Daisy |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/76f8abb6-04c1-4c5a-89af-47b935628297)| Unique
+Banana |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/06d6efc7-a358-418f-a31c-81e3eea3207f)| Unique
 
 
 
