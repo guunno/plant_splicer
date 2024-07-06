@@ -13,5 +13,5 @@ public:
 	static void ShuffleGenome(BranchGenome gene0, BranchGenome gene1, BranchGenome& out);
 	static void CreateSplicedPlant(const sf::String& path0, const sf::String& path1, uint32_t randomSeed, Buffer<BranchGenome>& splicedPlant);
 
-	static bool ConvertFromHeaderless(const std::string& path);
+	static bool ConvertLegacy(const std::string& path);
 };

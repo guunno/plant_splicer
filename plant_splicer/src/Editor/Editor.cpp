@@ -93,6 +93,10 @@ void Editor::Process()
 					}
 					break;
 
+				case sf::Keyboard::C:
+					FileManager::ConvertLegacy(splicingSettings.loadPath);
+					break;
+
 				case sf::Keyboard::P:
 					if (m_Controlling)
 						FileManager::CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
@@ -152,13 +156,15 @@ void Editor::Process()
 
 				case sf::Keyboard::Down:
 					if (currPage < 2)
-						currPage += 1;
+					{
+						currPage++;
+					}
 					DeActivateAll();
 					break;
 
 				case sf::Keyboard::Up:
 					if (currPage > 0)
-						currPage -= 1;
+						currPage--;
 					DeActivateAll();
 					break;
 				}
@@ -308,7 +314,7 @@ void Editor::RenderConstants()
 	m_window->draw(text);
 
 	text.setCharacterSize(15);
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		if (settingsManager.buttons[i].page != currPage)
 			continue;
@@ -353,14 +359,6 @@ void Editor::RenderSplicing()
 		text.setPosition(250, (splicingManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 	}
-
-	text.setString("KeyBinds");
-	text.setPosition(250 - (text.getLocalBounds().width / 2), 300);
-	m_window->draw(text);
-
-	text.setString("I-Load/O-Save/P-Splice/Esc-Menu\nInteract with the render window to update it");
-	text.setPosition(250 - (text.getLocalBounds().width / 2), 350);
-	m_window->draw(text);
 
 	m_window->display();
 }

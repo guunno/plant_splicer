@@ -16,6 +16,7 @@ struct BranchData
 	int branchingPoints[6] { 1, 1, 1, 1, 1, 1 }; // Where Along Each Branch do Child Branches begin
 	int branchIndexes[6] {-1, -1, -1, -1, -1, -1}; // Genome Indices of Child Branches
 	int rBranchIndexes[3]{ -1, -1, -1 }; // Genome Indices of Recursive Ending Branches
+	int conBranchIndexes[3]{ -1, -1, -1 }; // Genome Indices of Recursive Consecutive Branches
 	int numBranches = 0; // Number of Child Branches
 	bool isDirPositive = 0; // Direction is Left or Right
 
@@ -58,11 +59,11 @@ public:
 	Branch() {}
 	Branch(BranchGenome& genomeData, Branch* parentBranch = nullptr);
 	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr, int gIdx = 0, int chInd = 0);
-	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, uint32_t recursionDepth = 0) const;
+	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, float zoom = 1, uint32_t recursionDepth = 0, bool conRec = false) const;
 
 public:
 	BranchData data;
-	uint32_t childIndices[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Child Index of 0 would mean no child for that index
+	uint32_t childIndices[12] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Child Index of 0 would mean no child for that index
 };
 
 class Plant
@@ -72,8 +73,8 @@ public:
 	Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window);
 	Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window, uint16_t seed);
 
-	void InitAllBranches(uint32_t seed);
-	void Render();
+	void InitAllBranches(uint32_t seed = 0);
+	void Render(float zoom = 1);
 
 public:
 	Vector2 pos;
@@ -84,9 +85,12 @@ public:
 	Buffer<BranchGenome> branchGenes { BRANCH_COUNT };
 
 private:
-	uint32_t GetBranchCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0);
-	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
+	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr, bool consecutiveRecusion = false);
 	uint32_t InitEndBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
+	void ResetIntermediate();
+
+private:
+	uint32_t GetBranchCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, bool consecutiveRecusion = false);
 
 private:
 	std::unique_ptr<sf::CircleShape> m_BranchRenderShape = std::make_unique<sf::CircleShape>();

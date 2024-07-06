@@ -43,6 +43,24 @@ bool FileManager::LoadGenomes(Buffer<BranchGenome>& outputData, const std::strin
     return true;
 }
 
+bool FileManager::ConvertLegacy(const std::string& path)
+{
+    Buffer<BranchGenome> buffer(Plant::BRANCH_COUNT);
+
+    // READ BYTES INTO BUFFER
+    {
+        std::ifstream file(path, std::ios::out | std::ios::binary);
+
+        if (!file.good())
+            return false;
+
+        file.read((char*)&buffer[0], sizeof(BranchGenome) * buffer.Size());
+        file.close();
+    }
+
+    return FileManager::SaveGenomes(buffer, path);
+}
+
 void FileManager::CheckGenomeReferences(bool* list, uint8_t recursionDepth, Buffer<BranchGenome>& bg, uint8_t index)
 {
     if (recursionDepth >= 5) return;
@@ -136,22 +154,4 @@ void FileManager::CreateSplicedPlant(const sf::String& string0, const sf::String
         else
             splicedPlant[i] = plant1[i];
     }
-}
-
-bool FileManager::ConvertFromHeaderless(const std::string& path)
-{
-    Buffer<BranchGenome> buffer(Plant::BRANCH_COUNT);
-
-    // READ BYTES INTO BUFFER
-    {
-        std::ifstream file(path, std::ios::out | std::ios::binary);
-
-        if (!file.good())
-            return false;
-
-        file.read((char*)&buffer[0], sizeof(BranchGenome) * buffer.Size());
-        file.close();
-    }
-
-    return FileManager::SaveGenomes(buffer, path);
 }

@@ -264,6 +264,10 @@ void SoloBranchGenomeButtonManager::LinkButtons(BranchGenome& linkedGenome)
 	// Spreading apart to avoid excess collisions between Child Branches
 	buttons[31].InitButton("DirSpread", 31, &linkedGenome.dirSpread);
 	buttons[32].InitButton("SpreadCloseness", 32, &linkedGenome.spreadMaxDistanceEff);
+
+	buttons[33].InitButton("ConBranch0", 33, &linkedGenome.cRBranch0);
+	buttons[34].InitButton("ConBranch0", 34, &linkedGenome.cRBranch1);
+	buttons[35].InitButton("ConBranch2", 35, &linkedGenome.cRBranch2);
 }
 
 void SettingsButtonManager::LinkButtons(Settings& editor)
@@ -274,6 +278,7 @@ void SettingsButtonManager::LinkButtons(Settings& editor)
 	buttons[3].InitButton("EditorColourR", 3, &editor.editorBG.r);
 	buttons[4].InitButton("EditorColourG", 4, &editor.editorBG.g);
 	buttons[5].InitButton("EditorColourB", 5, &editor.editorBG.b);
+	buttons[6].InitButton("Zoom", 6, &editor.zoom);
 }
 
 void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
@@ -281,7 +286,7 @@ void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
 	// there is an offset for space for something at the top, could be anything :/
 	int selectedRow = floor(mouseY / 30);
 	selectedRow -= 2;
-	if (selectedRow >= 0 && selectedRow < 6)
+	if (selectedRow >= 0 && selectedRow < 7)
 	{
 		stringifiedNum = "";
 		if (buttons[selectedRow].page != currPage)
