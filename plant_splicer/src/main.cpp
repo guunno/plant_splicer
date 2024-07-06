@@ -4,52 +4,64 @@
 #include "Editor/Editor.h"
 #include <chrono>
 
+#include "Editor/FileDialoguePrompt.h"
+
 #include <memory>
 
 #ifdef DIST
 #define main WinMain
 #endif
 
+#define IS_CONVERTING_FILE 0
+
 int main()
 {
+#if IS_CONVERTING_FILE
+	std::string path;
+	AskUserForPath(path, FileSearchFilter{"Tree Files!", "*.genome"});
+	std::cout << "Converting `" << path << "` " << (FileManager::ConvertFromHeaderless(path) ? "Succeeded" : "Failed") << "!\n";
+	return 0;
+#endif
+
 	std::shared_ptr<sf::RenderWindow> window = std::make_shared<sf::RenderWindow>(sf::VideoMode(800, 800), "Render", sf::Style::Close);
 	std::unique_ptr<Editor> editor = std::make_unique<Editor>();
-	sf::Event event;
+
 	Vector2 move(1, 0);
-	Plant plant(Vector2(400.0f, 800.0f), window);
+	uint32_t t = (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
+	Plant plant(Vector2(400.0f, 800.0f), window, t);
 
 	editor->Create();
 
 	window->clear((editor->settings.mainBG));
 	plant.Render();
 	window->display();
-	
-	unsigned int t = std::chrono::system_clock::now().time_since_epoch().count();
 
+	sf::Event mainWindowEvent;
 	while (window->isOpen())
 	{
-		while (window->pollEvent(event))
+		while (window->pollEvent(mainWindowEvent))
 		{
-			if (event.type == sf::Event::Closed)
+			if (mainWindowEvent.type == sf::Event::Closed)
 				window->close();
 
-			if (event.type == sf::Event::MouseButtonPressed)
+			if (mainWindowEvent.type == sf::Event::MouseButtonPressed)
 			{
 				window->clear(editor->settings.mainBG);
 				plant.branchGenes = editor->branchGenomes;
-				t = std::chrono::system_clock::now().time_since_epoch().count();
+				t = (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
 				plant.InitAllBranches(t);
 				plant.Render();
 				window->display();
 			}
 
-			if (event.type == sf::Event::KeyPressed)
+			if (mainWindowEvent.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::S)
+				if (mainWindowEvent.key.code == sf::Keyboard::S)
 				{
 					window->clear(editor->settings.mainBG);
 					plant.InitAllBranches(t);
 					plant.Render();
+
 					sf::Texture screenShot;
 					screenShot.create(window->getSize().x, window->getSize().y);
 					screenShot.update(*window);

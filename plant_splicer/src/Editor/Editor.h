@@ -7,8 +7,13 @@
 class Editor
 {
 public:
-	std::unique_ptr<sf::RenderWindow> m_window;
+	void Create();
+	void DeActivateAll();
+	bool IsAnythingActive();
 
+	void Process();
+
+public:
 	sf::Font font;
 	sf::Text text;
 	Buffer<BranchGenome> branchGenomes{ 10 };
@@ -25,12 +30,6 @@ public:
 
 	Mode mode = Menu;
 
-	void Create();
-	void DeActivateAll();
-	bool IsAnythingActive();
-	
-	void Process();
-
 private:
 	void RenderMenu();
 	void RenderBranchEditor();
@@ -38,5 +37,6 @@ private:
 	void RenderSplicing();
 
 private:
-	FileManager m_FileManager;
+	std::unique_ptr<sf::RenderWindow> m_window;
+	bool m_Controlling = false;
 };

@@ -3,29 +3,41 @@
 #include <chrono>
 #include <string>
 
+#include "Plant.h"
+
 bool FileManager::SaveGenomes(Buffer<BranchGenome>& data)
 {
-	std::string str;
-	str += std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".genome";
-	std::ofstream file(str, std::ios::out | std::ios::binary);
+    std::string path = std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".genome";
+    return SaveGenomes(data, path);
+}
+
+bool FileManager::SaveGenomes(Buffer<BranchGenome>& data, const std::string& path)
+{
+	std::ofstream file(path, std::ios::out | std::ios::binary);
 
 	if (!file.good())
 		return false;
 
+    uint32_t stride = sizeof(BranchGenome);
+    file.write((char*)&stride, sizeof(uint32_t));
     file.write((char*)&data[0], sizeof(BranchGenome) * data.Size());
 
 	file.close();
     return true;
 }
 
-bool FileManager::LoadGenomes(Buffer<BranchGenome>& outputData, sf::String path)
+bool FileManager::LoadGenomes(Buffer<BranchGenome>& outputData, const std::string& path)
 {
-	std::ifstream file(path.toAnsiString(), std::ios::out | std::ios::binary);
+	std::ifstream file(path, std::ios::out | std::ios::binary);
 
 	if (!file.good())
 		return false;
 
-    file.read((char*)&outputData[0], sizeof(BranchGenome) * outputData.Size());
+    uint32_t stride = 0;
+    file.read((char*)&stride, sizeof(stride));
+
+    for (int i = 0; i < outputData.Size(); i++)
+        file.read((char*)&outputData[i], stride);
 
     file.close();
     return true;
@@ -100,7 +112,7 @@ void FileManager::ShuffleGenome(BranchGenome gene0, BranchGenome gene1, BranchGe
 #undef SHUFFLE
 }
 
-void FileManager::CreateSplicedPlant(sf::String string0, sf::String string1, unsigned int randomSeed, Buffer<BranchGenome>& splicedPlant)
+void FileManager::CreateSplicedPlant(const sf::String& string0, const sf::String& string1, uint32_t randomSeed, Buffer<BranchGenome>& splicedPlant)
 {
 	Buffer<BranchGenome> plant0{ 10 };
 	Buffer<BranchGenome> plant1{ 10 };
@@ -124,4 +136,22 @@ void FileManager::CreateSplicedPlant(sf::String string0, sf::String string1, uns
         else
             splicedPlant[i] = plant1[i];
     }
+}
+
+bool FileManager::ConvertFromHeaderless(const std::string& path)
+{
+    Buffer<BranchGenome> buffer(Plant::BRANCH_COUNT);
+
+    // READ BYTES INTO BUFFER
+    {
+        std::ifstream file(path, std::ios::out | std::ios::binary);
+
+        if (!file.good())
+            return false;
+
+        file.read((char*)&buffer[0], sizeof(BranchGenome) * buffer.Size());
+        file.close();
+    }
+
+    return FileManager::SaveGenomes(buffer, path);
 }

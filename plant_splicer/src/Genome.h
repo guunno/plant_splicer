@@ -63,7 +63,7 @@ struct Genome
 struct BranchGenome : Genome
 {
 	// CHANGE VARIABLES
-	FloatColour colourChange{ 0.5, 0.2, 0.1 }; //change in color every step
+	FloatColour colourChange{ 0.5f, 0.2f, 0.1f }; //change in color every step
 	float widthChange = -0.016f; // can be negative
 
 	float dirChange = 0.003f;

@@ -4,13 +4,21 @@
 #include "../Genome.h"
 #include <SFML/System.hpp>
 #include <map>
+#include <sstream>
+
+inline std::string floatToString(float floatNumber)
+{
+	std::stringstream ss;
+	ss << floatNumber;
+	return ss.str();
+}
 
 #define NUM_GENES_IN_BRANCH 33
 
 class ValueEditButton
 {
 public:
-	union { float* floatVal; int* intVal; };
+	union { float* floatVal = nullptr; int* intVal; };
 	float max = 100;
 	float min = -100;
 	int yPos = 0;
@@ -18,10 +26,11 @@ public:
 	bool floorToInt = false;
 	sf::String label;
 
-	void InitButton(sf::String name, int buttonIndex, bool floorToIntN = false, float maxN = 1000, float minN = -1000);
-	void PointButton(float& value);
-	void PointButton(int& value);
+	void InitButton(const sf::String& name, int buttonIndex, float* value, float maxN = 1000, float minN = -1000);
+	void InitButton(const sf::String& name, int buttonIndex, int* value, float maxN = 1000, float minN = -1000);
 
+private:
+	void Initialise(const sf::String& name, int buttonIndex, float maxN = 1000, float minN = -1000);
 };
 
 class StringEditButton
@@ -32,8 +41,7 @@ public:
 	int page = 0;
 	sf::String label;
 
-	void InitButton(sf::String name, int buttonIndex);
-	void PointButton(sf::String& pointer);
+	void InitButton(const sf::String& name, int buttonIndex, sf::String* valueEditText);
 };
 
 class SoloBranchGenomeButtonManager 
@@ -58,9 +66,9 @@ struct Settings
 
 struct SplicingSettings
 {
-	sf::String loadPath;
-	sf::String splice0Path;
-	sf::String splice1Path;
+	sf::String loadPath = "";
+	sf::String splice0Path = "(CLICK TO CHANGE)";
+	sf::String splice1Path = "(CLICK TO CHANGE)";
 };
 
 class SettingsButtonManager 

@@ -30,6 +30,7 @@
     <ClInclude Include="src\Buffer.h" />
     <ClInclude Include="src\Editor\Button.h" />
     <ClInclude Include="src\Editor\Editor.h" />
+    <ClInclude Include="src\Editor\FileDialoguePrompt.h" />
     <ClInclude Include="src\FileManager.h" />
     <ClInclude Include="src\Genome.h" />
     <ClInclude Include="src\Plant.h" />
@@ -38,6 +39,7 @@
   <ItemGroup>
     <ClCompile Include="src\Editor\Button.cpp" />
     <ClCompile Include="src\Editor\Editor.cpp" />
+    <ClCompile Include="src\Editor\FileDialoguePrompt.cpp" />
     <ClCompile Include="src\FileManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Plant.cpp" />
@@ -214,13 +216,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjDir)Dependencies\SFML\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\PortableFileDialogues\PortableFileDialogues\include;$(ProjectDir)Dependencies\SFML\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;user32.lib;sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\SFML\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -231,7 +234,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>RELEASE;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjDir)Dependencies\SFML\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\PortableFileDialogues\PortableFileDialogues\include;$(ProjectDir)Dependencies\SFML\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -240,6 +243,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>sfml-system.lib;sfml-window.lib;sfml-graphics.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\SFML\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -250,7 +254,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjDir)Dependencies\SFML\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\PortableFileDialogues\PortableFileDialogues\include;$(ProjectDir);$(ProjectDir)Dependencies\SFML\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -259,6 +263,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>sfml-system.lib;sfml-window.lib;sfml-graphics.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\SFML\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

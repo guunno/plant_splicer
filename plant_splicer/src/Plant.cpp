@@ -75,18 +75,14 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int gIdx, in
 		{
 			numOfSiblings++;
 			if (thisIdx != 0 && i < thisIdx)
-			{
 				youngness++;
-			}
 		}
 	}
 
 	if (numOfSiblings < 2)
-	{
 		return;
-	}
 
-	data.spreadOff += ((genomeData.dirSpread * 1.0f / numOfSiblings * 1.0f) * youngness * 1.0f) - (genomeData.dirSpread / PI);
+	data.spreadOff += ((genomeData.dirSpread * 1.0f / numOfSiblings * 1.0f) * youngness * 1.0f) - (float)(genomeData.dirSpread / PI);
 }
 
 static void RenderBranchSegment(
@@ -150,7 +146,7 @@ void Branch::RenderBranch(
 					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, recursionDepth + 1);
 			}
 		}
-		if (recursionDepth == MAX_RECUSION_DEPTH)
+		else if (recursionDepth == MAX_RECUSION_DEPTH)
 		{
 			for (int j = 0; j < 3; j++)
 			{
@@ -161,15 +157,17 @@ void Branch::RenderBranch(
 	}
 }
 
-void Plant::ResetIntermediate()
-{
-	m_IntermediateBranchCount = 0;
-	m_Branches.ReCreate(GetBranchCount());
-}
-
 Plant::Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window)
 	:pos(pos), window(window)
 {
+	m_Branches.Create(GetBranchCount());
+	InitBranches();
+}
+
+Plant::Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window, uint16_t seed)
+	:pos(pos), window(window)
+{
+	srand(seed);
 	m_Branches.Create(GetBranchCount());
 	InitBranches();
 }
@@ -221,9 +219,7 @@ uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch*
 		{
 			int index = m_Branches[currentIndex].data.rBranchIndexes[i];
 			if (index >= 0)
-			{
-				m_Branches[currentIndex].childIndices[i + 6] = InitRBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
-			}
+				m_Branches[currentIndex].childIndices[i + 6] = InitEndBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
 		}
 	}
 
@@ -234,16 +230,14 @@ uint32_t Plant::InitBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch*
 	{
 		int index = m_Branches[currentIndex].data.branchIndexes[i];
 		if (index >= 0)
-		{
 			m_Branches[currentIndex].childIndices[i] = InitBranches(index, recursionDepth + 1, &m_Branches[currentIndex]);
-		}
 	}
 
 
 	return currentIndex;
 }
 
-uint32_t Plant::InitRBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch* parent)
+uint32_t Plant::InitEndBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch* parent)
 {
 	uint32_t currentIndex = m_IntermediateBranchCount;
 	m_Branches[currentIndex].Create(branchGenes[genomeIdx], parent);
@@ -252,9 +246,10 @@ uint32_t Plant::InitRBranches(uint32_t genomeIdx, uint8_t recursionDepth, Branch
 	return currentIndex;
 }
 
-void Plant::InitAllBranches(unsigned int seed)
+void Plant::InitAllBranches(uint32_t seed)
 {
 	srand(seed);
-	ResetIntermediate();
+	m_IntermediateBranchCount = 0;
+	m_Branches.ReCreate(GetBranchCount());
 	InitBranches();
 }

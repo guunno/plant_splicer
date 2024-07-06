@@ -70,9 +70,11 @@ class Plant
 public:
 	Plant() {}
 	Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window);
+	Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window, uint16_t seed);
 
+	void InitAllBranches(uint32_t seed);
 	void Render();
-	
+
 public:
 	Vector2 pos;
 	std::shared_ptr<sf::RenderWindow> window = nullptr;
@@ -80,13 +82,11 @@ public:
 	static const uint32_t BRANCH_COUNT = 10;
 	static const uint32_t FRUIT_COUNT = 2;
 	Buffer<BranchGenome> branchGenes { BRANCH_COUNT };
-	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
-	uint32_t InitRBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
-	void InitAllBranches(unsigned int seed);
-	void ResetIntermediate();
 
 private:
 	uint32_t GetBranchCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0);
+	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
+	uint32_t InitEndBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
 
 private:
 	std::unique_ptr<sf::CircleShape> m_BranchRenderShape = std::make_unique<sf::CircleShape>();

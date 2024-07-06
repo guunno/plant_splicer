@@ -1,35 +1,36 @@
 #include "Button.h"
 #include <sstream>
 
-void ValueEditButton::InitButton(sf::String name, int buttonIndex, bool floorToIntN, float maxN, float minN)
+void ValueEditButton::InitButton(const sf::String& name, int buttonIndex, float* value, float maxN, float minN)
+{
+	floorToInt = false;
+	floatVal = value;
+	Initialise(name, buttonIndex, maxN, minN);
+}
+
+void ValueEditButton::InitButton(const sf::String& name, int buttonIndex, int* value, float maxN, float minN)
+{
+	floorToInt = true;
+	intVal = value;
+	Initialise(name, buttonIndex, maxN, minN);
+}
+
+void ValueEditButton::Initialise(const sf::String& name, int buttonIndex, float maxN, float minN)
 {
 	max = maxN;
 	min = minN;
 	yPos = buttonIndex % 15;
 	page = floor(buttonIndex / 15);
-	floorToInt = floorToIntN;
 	label = name;
 };
 
-void ValueEditButton::PointButton(float& pointer)
-{
-	floatVal = &pointer;
-};
-void ValueEditButton::PointButton(int& pointer)
-{
-	intVal = &pointer;
-};
 
-
-void StringEditButton::InitButton(sf::String name, int buttonIndex)
+void StringEditButton::InitButton(const sf::String& name, int buttonIndex, sf::String* textEdit)
 {
 	yPos = buttonIndex % 15;
-	page = floor(buttonIndex / 15);
+	page = (int)floor(buttonIndex / 15);
 	label = name;
-};
-void StringEditButton::PointButton(sf::String& pointer)
-{
-	value = &pointer;
+	value = textEdit;
 };
 
 
@@ -38,11 +39,20 @@ void SoloBranchGenomeButtonManager::ActivateButton(int mouseY, int currPage)
 	// there is an offset for space for something at the top, could be anything :/
 	int selectedRow = floor(mouseY / 30);
 	selectedRow -= 2;
+
 	if (selectedRow >= 0 && selectedRow < NUM_GENES_IN_BRANCH)
 	{
-		stringifiedNum = "";
 		if (buttons[selectedRow].page != currPage)
+		{
+			stringifiedNum = "";
 			return;
+		}
+
+		if (buttons[selectedRow].floorToInt)
+			stringifiedNum = std::to_string(*buttons[selectedRow].intVal);
+		else
+			stringifiedNum = floatToString(*buttons[selectedRow].floatVal);
+
 		activeButton = &buttons[selectedRow];
 	}
 };
@@ -52,16 +62,14 @@ void SoloBranchGenomeButtonManager::ProcessInput(sf::Keyboard::Key key)
 	if (key == sf::Keyboard::Enter)
 	{
 		if (!activeButton) return;
-		bool hasDecimal = false;
+		if (stringifiedNum.getSize() < 1)
+		{
+			activeButton = nullptr;
+			return;
+		}
+
+		bool hasDecimal = stringifiedNum.find(".") != sf::String::InvalidPos;
 		float num = 0;
-		if (stringifiedNum.find(".") == sf::String::InvalidPos)
-		{
-			hasDecimal = false;
-		}
-		else
-		{
-			hasDecimal = true;
-		}
 
 		bool positive = true;
 		if (stringifiedNum.find("-") != sf::String::InvalidPos)
@@ -73,17 +81,12 @@ void SoloBranchGenomeButtonManager::ProcessInput(sf::Keyboard::Key key)
 		if (!hasDecimal)
 		{
 			for (int i = 0; i < stringifiedNum.getSize(); i++)
-			{
-				num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
-			}
+				num += ((int)stringifiedNum[i] - 48) * (float)pow(10, stringifiedNum.getSize() - i - 1);
+
 			if (activeButton->floorToInt)
-			{
 				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
-			}
 			else
-			{
 				*activeButton->floatVal = num * (((int)positive * 2) - 1);
-			}
 		}
 		else
 		{
@@ -95,40 +98,38 @@ void SoloBranchGenomeButtonManager::ProcessInput(sf::Keyboard::Key key)
 					beforeDecimal = true;
 					continue;
 				}
+
 				if (beforeDecimal)
-				{
-					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
-				}
+					num += ((int)stringifiedNum[i] - 48) * (float)pow(10, stringifiedNum.getSize() - i - 1);
 				else
-				{
-					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 2);
-				}
+					num += ((int)stringifiedNum[i] - 48) * (float)pow(10, stringifiedNum.getSize() - i - 2);
 			}
-			num /= pow(10, (stringifiedNum.getSize() - stringifiedNum.find(".") - 1));
+
+			num /= (float)pow(10, (stringifiedNum.getSize() - stringifiedNum.find(".") - 1));
 			if (activeButton->floorToInt)
-			{
 				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
-			}
 			else
-			{
 				*activeButton->floatVal = num * (((int)positive * 2) - 1);
-			}
 		}
 		stringifiedNum = "";
 		activeButton = nullptr;
 	}
 
-	if (key == sf::Keyboard::Period)
+	switch (key)
 	{
-		if(stringifiedNum.find(".") == sf::String::InvalidPos)
+	case sf::Keyboard::Period:
+		if (stringifiedNum.find(".") == sf::String::InvalidPos)
 			stringifiedNum += ".";
 		return;
-	}
 
-	if (key == sf::Keyboard::Dash)
-	{
+	case sf::Keyboard::Dash:
 		if (stringifiedNum.find("-") == sf::String::InvalidPos)
 			stringifiedNum.insert(0, "-");
+		return;
+
+	case sf::Keyboard::Backspace:
+		if (stringifiedNum.getSize() > 0)
+			stringifiedNum.erase(stringifiedNum.getSize() - 1, 1);
 		return;
 	}
 
@@ -143,14 +144,11 @@ void SettingsButtonManager::ProcessInput(sf::Keyboard::Key key)
 		if (!activeButton) return;
 		bool hasDecimal = false;
 		float num = 0;
+
 		if (stringifiedNum.find(".") == sf::String::InvalidPos)
-		{
 			hasDecimal = false;
-		}
 		else
-		{
 			hasDecimal = true;
-		}
 
 		bool positive = true;
 		if (stringifiedNum.find("-") != sf::String::InvalidPos)
@@ -162,17 +160,12 @@ void SettingsButtonManager::ProcessInput(sf::Keyboard::Key key)
 		if (!hasDecimal)
 		{
 			for (int i = 0; i < stringifiedNum.getSize(); i++)
-			{
-				num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
-			}
+				num += ((int)stringifiedNum[i] - 48) * (float)pow(10, stringifiedNum.getSize() - i - 1);
+
 			if (activeButton->floorToInt)
-			{
 				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
-			}
 			else
-			{
 				*activeButton->floatVal = num * (((int)positive * 2) - 1);
-			}
 		}
 		else
 		{
@@ -184,25 +177,21 @@ void SettingsButtonManager::ProcessInput(sf::Keyboard::Key key)
 					beforeDecimal = true;
 					continue;
 				}
+
 				if (beforeDecimal)
-				{
-					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 1);
-				}
+					num += ((int)stringifiedNum[i] - 48) * (float)pow(10, stringifiedNum.getSize() - i - 1);
 				else
-				{
-					num += ((int)stringifiedNum[i] - 48) * pow(10, stringifiedNum.getSize() - i - 2);
-				}
+					num += ((int)stringifiedNum[i] - 48) * (float)pow(10, stringifiedNum.getSize() - i - 2);
 			}
-			num /= pow(10, (stringifiedNum.getSize() - stringifiedNum.find(".") - 1));
+
+			num /= (float)pow(10, (stringifiedNum.getSize() - stringifiedNum.find(".") - 1));
+
 			if (activeButton->floorToInt)
-			{
-				*activeButton->intVal = floor(num * (((int)positive * 2) - 1));
-			}
+				*activeButton->intVal = (int)floor(num * (((int)positive * 2) - 1));
 			else
-			{
 				*activeButton->floatVal = num * (((int)positive * 2) - 1);
-			}
 		}
+
 		stringifiedNum = "";
 		activeButton = nullptr;
 	}
@@ -227,96 +216,64 @@ void SettingsButtonManager::ProcessInput(sf::Keyboard::Key key)
 
 void SoloBranchGenomeButtonManager::LinkButtons(BranchGenome& linkedGenome)
 {
-	buttons[0].InitButton("InitDir", 0);
-	buttons[0].PointButton(linkedGenome.initDir);
-	buttons[1].InitButton("InitColourR", 1);
-	buttons[1].PointButton(linkedGenome.initColour.r);
-	buttons[2].InitButton("InitColourG", 2);
-	buttons[2].PointButton(linkedGenome.initColour.g);
-	buttons[3].InitButton("InitColourB", 3);
-	buttons[3].PointButton(linkedGenome.initColour.b);
-	buttons[4].InitButton("InitWidth", 4);
-	buttons[4].PointButton(linkedGenome.initWidth);
+	// Initial Orientations
+	buttons[0].InitButton("InitDir", 0, &linkedGenome.initDir);
+	buttons[1].InitButton("InitColourR", 1, &linkedGenome.initColour.r);
+	buttons[2].InitButton("InitColourG", 2, &linkedGenome.initColour.g);
+	buttons[3].InitButton("InitColourB", 3, &linkedGenome.initColour.b);
+	buttons[4].InitButton("InitWidth", 4, &linkedGenome.initWidth);
 
-// integer type buttons are handled differently
-	buttons[5].InitButton("Length", 5, true, 0.0f, 1.0f);
-	buttons[5].PointButton(linkedGenome.length);
-	buttons[6].InitButton("LengthVariation", 6, true);
-	buttons[6].PointButton(linkedGenome.lengthVariation);
+	// Length of Branch!
+	buttons[5].InitButton("Length", 5, &linkedGenome.length, 0.0f, 1.0f);
+	buttons[6].InitButton("LengthVariation", 6, &linkedGenome.lengthVariation);
 
-	buttons[7].InitButton("ColourAdoption", 7, false);
-	buttons[7].PointButton(linkedGenome.colourAdoption);
-	buttons[8].InitButton("WidthAdoption", 8, false);
-	buttons[8].PointButton(linkedGenome.widthAdoption);
-	buttons[9].InitButton("DirAdoption", 9, false);
-	buttons[9].PointButton(linkedGenome.dirAdoption);
-	buttons[10].InitButton("ColourChangeR", 10);
-	buttons[10].PointButton(linkedGenome.colourChange.r);
-	buttons[11].InitButton("ColourChangeG", 11);
-	buttons[11].PointButton(linkedGenome.colourChange.g);
-	buttons[12].InitButton("ColourChangeB", 12);
-	buttons[12].PointButton(linkedGenome.colourChange.b);
-	buttons[13].InitButton("WidthChange", 13);
-	buttons[13].PointButton(linkedGenome.widthChange);
-	buttons[14].InitButton("DirChange", 14);
-	buttons[14].PointButton(linkedGenome.dirChange);
-	buttons[15].InitButton("RandTurn", 15);
-	buttons[15].PointButton(linkedGenome.randTurn);
+	// How much its Parent Branch affeects its orientation
+	buttons[7].InitButton("ColourAdoption", 7, &linkedGenome.colourAdoption);
+	buttons[8].InitButton("WidthAdoption", 8, &linkedGenome.widthAdoption);
+	buttons[9].InitButton("DirAdoption", 9, &linkedGenome.dirAdoption);
 
-	// integer type buttons are handeled differently
-	buttons[16].InitButton("Branch0Gene", 16, true);
-	buttons[16].PointButton(linkedGenome.branch0);
-	buttons[17].InitButton("Branch1Gene", 17, true);
-	buttons[17].PointButton(linkedGenome.branch1);
-	buttons[18].InitButton("Branch2Gene", 18, true);
-	buttons[18].PointButton(linkedGenome.branch2);
-	buttons[19].InitButton("Branch3Gene", 19, true);
-	buttons[19].PointButton(linkedGenome.branch3);
-	buttons[20].InitButton("Branch4Gene", 20, true);
-	buttons[20].PointButton(linkedGenome.branch4);
-	buttons[21].InitButton("Branch5Gene", 21, true);
-	buttons[21].PointButton(linkedGenome.branch5);
+	// Changes taking place along the branch
+	buttons[10].InitButton("ColourChangeR", 10, &linkedGenome.colourChange.r);
+	buttons[11].InitButton("ColourChangeG", 11, &linkedGenome.colourChange.g);
+	buttons[12].InitButton("ColourChangeB", 12, &linkedGenome.colourChange.b);
+	buttons[13].InitButton("WidthChange", 13, &linkedGenome.widthChange);
+	buttons[14].InitButton("DirChange", 14, &linkedGenome.dirChange);
+	buttons[15].InitButton("RandTurn", 15, &linkedGenome.randTurn);
 
-	buttons[22].InitButton("Branch0Pos", 22, false, 1.0f, 0.0f);
-	buttons[22].PointButton(linkedGenome.branch0Position);
-	buttons[23].InitButton("Branch1Pos", 23, false, 1.0f, 0.0f);
-	buttons[23].PointButton(linkedGenome.branch1Position);
-	buttons[24].InitButton("Branch2Pos", 24, false, 1.0f, 0.0f);
-	buttons[24].PointButton(linkedGenome.branch2Position);
-	buttons[25].InitButton("Branch3Pos", 25, false, 1.0f, 0.0f);
-	buttons[25].PointButton(linkedGenome.branch3Position);
-	buttons[26].InitButton("Branch4Pos", 26, false, 1.0f, 0.0f);
-	buttons[26].PointButton(linkedGenome.branch4Position);
-	buttons[27].InitButton("Branch5Pos", 27, false, 1.0f, 0.0f);
-	buttons[27].PointButton(linkedGenome.branch5Position);
+	// Child Branches
+	buttons[16].InitButton("Branch0Gene", 16, &linkedGenome.branch0);
+	buttons[17].InitButton("Branch1Gene", 17, &linkedGenome.branch1);
+	buttons[18].InitButton("Branch2Gene", 18, &linkedGenome.branch2);
+	buttons[19].InitButton("Branch3Gene", 19, &linkedGenome.branch3);
+	buttons[20].InitButton("Branch4Gene", 20, &linkedGenome.branch4);
+	buttons[21].InitButton("Branch5Gene", 21, &linkedGenome.branch5);
 
-	buttons[28].InitButton("Branch0Rec", 28, true);
-	buttons[28].PointButton(linkedGenome.rBranch0);
-	buttons[29].InitButton("Branch1Rec", 29, true);
-	buttons[29].PointButton(linkedGenome.rBranch1);
-	buttons[30].InitButton("Branch2Rec", 30, true);
-	buttons[30].PointButton(linkedGenome.rBranch2);
+	// Where each Child Branch Begins
+	buttons[22].InitButton("Branch0Pos", 22, &linkedGenome.branch0Position, 1.0f, 0.0f);
+	buttons[23].InitButton("Branch1Pos", 23, &linkedGenome.branch1Position, 1.0f, 0.0f);
+	buttons[24].InitButton("Branch2Pos", 24, &linkedGenome.branch2Position, 1.0f, 0.0f);
+	buttons[25].InitButton("Branch3Pos", 25, &linkedGenome.branch3Position, 1.0f, 0.0f);
+	buttons[26].InitButton("Branch4Pos", 26, &linkedGenome.branch4Position, 1.0f, 0.0f);
+	buttons[27].InitButton("Branch5Pos", 27, &linkedGenome.branch5Position, 1.0f, 0.0f);
 
-	buttons[31].InitButton("DirSpread", 31);
-	buttons[31].PointButton(linkedGenome.dirSpread);
-	buttons[32].InitButton("SpreadCloseness", 32, true);
-	buttons[32].PointButton(linkedGenome.spreadMaxDistanceEff);
+	// At final recursion, Create these Child Branch
+	buttons[28].InitButton("Branch0Rec", 28, &linkedGenome.rBranch0);
+	buttons[29].InitButton("Branch1Rec", 29, &linkedGenome.rBranch1);
+	buttons[30].InitButton("Branch2Rec", 30, &linkedGenome.rBranch2);
+
+	// Spreading apart to avoid excess collisions between Child Branches
+	buttons[31].InitButton("DirSpread", 31, &linkedGenome.dirSpread);
+	buttons[32].InitButton("SpreadCloseness", 32, &linkedGenome.spreadMaxDistanceEff);
 }
 
 void SettingsButtonManager::LinkButtons(Settings& editor)
 {
-	buttons[0].InitButton("BGColourR", 0);
-	buttons[0].PointButton(editor.mainBG.r);
-	buttons[1].InitButton("BGColourG", 1);
-	buttons[1].PointButton(editor.mainBG.g);
-	buttons[2].InitButton("BGColourB", 2);
-	buttons[2].PointButton(editor.mainBG.b);
-	buttons[3].InitButton("EditorColourR", 3);
-	buttons[3].PointButton(editor.editorBG.r);
-	buttons[4].InitButton("EditorColourG", 4);
-	buttons[4].PointButton(editor.editorBG.g);
-	buttons[5].InitButton("EditorColourB", 5);
-	buttons[5].PointButton(editor.editorBG.b);
+	buttons[0].InitButton("BGColourR", 0, &editor.mainBG.r);
+	buttons[1].InitButton("BGColourG", 1, &editor.mainBG.g);
+	buttons[2].InitButton("BGColourB", 2, &editor.mainBG.b);
+	buttons[3].InitButton("EditorColourR", 3, &editor.editorBG.r);
+	buttons[4].InitButton("EditorColourG", 4, &editor.editorBG.g);
+	buttons[5].InitButton("EditorColourB", 5, &editor.editorBG.b);
 }
 
 void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
@@ -335,12 +292,9 @@ void SettingsButtonManager::ActivateButton(int mouseY, int currPage)
 
 void SplicingButtonManager::LinkButtons(SplicingSettings& editor)
 {
-	buttons[0].InitButton("LoadPath", 0);
-	buttons[0].PointButton(editor.loadPath);
-	buttons[1].InitButton("SpliceGenome0Path", 1);
-	buttons[1].PointButton(editor.splice0Path);
-	buttons[2].InitButton("SpliceGenome1Path", 2);
-	buttons[2].PointButton(editor.splice1Path);
+	buttons[0].InitButton("SpliceGenome0Path", 0, &editor.splice0Path);
+	buttons[1].InitButton("SpliceGenome1Path", 1, &editor.splice1Path);
+	// buttons[2].InitButton("LoadPath", 0, &editor.loadPath);
 }
 
 void SplicingButtonManager::ActivateButton(int mouseY, int currPage)

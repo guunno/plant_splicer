@@ -5,6 +5,10 @@
 
 #include <memory>
 
+#include <iostream>
+
+#include "FileDialoguePrompt.h"
+
 void Editor::Create()
 {
 	m_window = std::make_unique<sf::RenderWindow>();
@@ -59,30 +63,60 @@ void Editor::Process()
 			{
 				switch (ev.key.code)
 				{
-				case sf::Keyboard::O:
-					m_FileManager.SaveGenomes(branchGenomes);
+				case sf::Keyboard::LControl:
+					m_Controlling = true;
+					continue;
+
+				case sf::Keyboard::RControl:
+					m_Controlling = true;
+					continue;
+
+				case sf::Keyboard::S:
+					if (m_Controlling)
+					{
+						std::string path;
+						SaveFilePath(path, FileSearchFilter{ "Tree File (.genome)", "*.genome" });
+						if (path.find(".genome") > path.size())
+							path += ".genome";
+
+						FileManager::SaveGenomes(branchGenomes, path);
+					}
 					break;
 
-				case sf::Keyboard::I:
-					m_FileManager.LoadGenomes(branchGenomes, splicingSettings.loadPath);
+				case sf::Keyboard::O:
+					if (m_Controlling)
+					{
+						std::string path;
+						OpenFilePath(path, FileSearchFilter{"Tree File (.genome)", "*.genome"});
+						if (path.size() > 0)
+							FileManager::LoadGenomes(branchGenomes, path);
+					}
 					break;
 
 				case sf::Keyboard::P:
-					m_FileManager.CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
-						std::chrono::system_clock::now().time_since_epoch().count(), branchGenomes);
+					if (m_Controlling)
+						FileManager::CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
+							(uint32_t)std::chrono::system_clock::now().time_since_epoch().count(), branchGenomes);
 					break;
 				}
 			}
 		}
+		else if (ev.type == sf::Event::KeyReleased)
+		{
+			if (!IsAnythingActive() && (ev.key.code == sf::Keyboard::LControl || ev.key.code == sf::Keyboard::RControl))
+			{
+				m_Controlling = false;
+				continue;
+			}
+		}
+
+
 		if (mode != Menu)
 		{
-			if (ev.type == sf::Event::KeyPressed)
+			if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Escape)
 			{
-				if (ev.key.code == sf::Keyboard::Escape)
-				{
-					mode = Menu;
-					DeActivateAll();
-				}
+				mode = Menu;
+				DeActivateAll();
 				currPage = 0;
 			}
 		}
@@ -100,15 +134,19 @@ void Editor::Process()
 				{
 				case sf::Keyboard::Left:
 					if (currBranch > 0)
+					{
 						currBranch -= 1;
-					currPage = 0;
+						currPage = 0;
+					}
 					DeActivateAll();
 					break;
 
 				case sf::Keyboard::Right:
 					if (currBranch < 9)
+					{
 						currBranch += 1;
-					currPage = 0;
+						currPage = 0;
+					}
 					DeActivateAll();
 					break;
 
@@ -143,7 +181,6 @@ void Editor::Process()
 						currPage -= 1;
 
 					DeActivateAll();
-					
 				}
 			}
 		}
@@ -247,7 +284,7 @@ void Editor::RenderBranchEditor()
 			continue;
 
 		text.setString(managers[currBranch].buttons[i].label);
-		text.setPosition(0, (managers[currBranch].buttons[i].yPos + 1) * 30);
+		text.setPosition(0, (managers[currBranch].buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 
 		if (managers[currBranch].activeButton == &managers[currBranch].buttons[i])
@@ -255,9 +292,9 @@ void Editor::RenderBranchEditor()
 		else if (managers[currBranch].buttons[i].floorToInt)
 			text.setString(std::to_string(*managers[currBranch].buttons[i].intVal));
 		else
-			text.setString(std::to_string(*managers[currBranch].buttons[i].floatVal));
+			text.setString(floatToString(*managers[currBranch].buttons[i].floatVal));
 
-		text.setPosition(250, (managers[currBranch].buttons[i].yPos + 1) * 30);
+		text.setPosition(250, (managers[currBranch].buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 	}
 
@@ -277,7 +314,7 @@ void Editor::RenderConstants()
 			continue;
 
 		text.setString(settingsManager.buttons[i].label);
-		text.setPosition(0, (settingsManager.buttons[i].yPos + 1) * 30);
+		text.setPosition(0, (settingsManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 
 		if (settingsManager.activeButton == &settingsManager.buttons[i])
@@ -285,9 +322,9 @@ void Editor::RenderConstants()
 		else if (settingsManager.buttons[i].floorToInt)
 			text.setString(std::to_string(*settingsManager.buttons[i].intVal));
 		else
-			text.setString(std::to_string(*settingsManager.buttons[i].floatVal));
+			text.setString(floatToString(*settingsManager.buttons[i].floatVal));
 
-		text.setPosition(250, (settingsManager.buttons[i].yPos + 1) * 30);
+		text.setPosition(250, (settingsManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 	}
 
@@ -302,10 +339,10 @@ void Editor::RenderSplicing()
 
 	text.setCharacterSize(15);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		text.setString(splicingManager.buttons[i].label);
-		text.setPosition(0, (splicingManager.buttons[i].yPos + 1) * 30);
+		text.setPosition(0, (splicingManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 
 		if (splicingManager.activeButton == &splicingManager.buttons[i])
@@ -313,7 +350,7 @@ void Editor::RenderSplicing()
 		else
 			text.setString(*splicingManager.buttons[i].value);
 
-		text.setPosition(250, (splicingManager.buttons[i].yPos + 1) * 30);
+		text.setPosition(250, (splicingManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
 	}
 
