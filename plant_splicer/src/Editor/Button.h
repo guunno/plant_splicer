@@ -40,6 +40,7 @@ public:
 	int yPos = 0;
 	int page = 0;
 	sf::String label;
+	sf::String display = "Enter Location";
 
 	void InitButton(const sf::String& name, int buttonIndex, sf::String* valueEditText);
 };
@@ -65,9 +66,8 @@ struct Settings
 
 struct SplicingSettings
 {
-	sf::String loadPath = "";
-	sf::String splice0Path = "(CLICK TO CHANGE)";
-	sf::String splice1Path = "(CLICK TO CHANGE)";
+	sf::String splice0Path = "Enter location";
+	sf::String splice1Path = "Enter location";
 };
 
 class SettingsButtonManager 
@@ -85,11 +85,8 @@ public:
 class SplicingButtonManager
 {
 public:
-	Buffer<StringEditButton> buttons{ 3 };
-	StringEditButton* activeButton = nullptr;
-	sf::String stringifiedNum = "";
+	Buffer<StringEditButton> buttons{ 2 };
 
 	void LinkButtons(SplicingSettings& editor);
 	void ActivateButton(int mouseX, int currPage);
-	void ProcessInput(char key);
 };

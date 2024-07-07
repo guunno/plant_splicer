@@ -34,8 +34,6 @@ void Editor::DeActivateAll()
 
 	settingsManager.activeButton = nullptr;
 	settingsManager.stringifiedNum = "";
-	splicingManager.activeButton = nullptr;
-	splicingManager.stringifiedNum = "";
 }
 
 bool Editor::IsAnythingActive()
@@ -46,7 +44,7 @@ bool Editor::IsAnythingActive()
 			return true;
 	}
 
-	return settingsManager.activeButton || splicingManager.activeButton;
+	return settingsManager.activeButton;
 }
 
 void Editor::Process()
@@ -75,7 +73,7 @@ void Editor::Process()
 					if (m_Controlling)
 					{
 						std::string path;
-						SaveFilePath(path, FileSearchFilter{ "Tree File (.genome)", "*.genome" });
+						SaveFilePath(path, FileSearchFilter{ "Genome File (.genome)", "*.genome" });
 						if (path.find(".genome") > path.size())
 							path += ".genome";
 
@@ -87,7 +85,7 @@ void Editor::Process()
 					if (m_Controlling)
 					{
 						std::string path;
-						OpenFilePath(path, FileSearchFilter{"Tree File (.genome)", "*.genome"});
+						OpenFilePath(path, FileSearchFilter{"Genome File (.genome)", "*.genome"});
 						if (path.size() > 0)
 							FileManager::LoadGenomes(branchGenomes, path);
 					}
@@ -97,7 +95,7 @@ void Editor::Process()
 					if (m_Controlling)
 					{
 						std::string path;
-						OpenFilePath(path, FileSearchFilter{ "Tree File (.genome)", "*.genome" });
+						OpenFilePath(path, FileSearchFilter{ "Genome File (.genome)", "*.genome" });
 						FileManager::ConvertLegacy(path);
 					}
 					break;
@@ -206,16 +204,6 @@ void Editor::Process()
 		{
 			switch (ev.type)
 			{
-			case sf::Event::KeyPressed:
-				if (ev.key.code == sf::Keyboard::Enter)
-					splicingManager.ProcessInput(ev.key.code);
-				break;
-
-			case sf::Event::TextEntered:
-				if (ev.text.unicode < 128 && ev.text.unicode != 8)
-					splicingManager.ProcessInput(ev.text.unicode);
-				break;
-
 			case sf::Event::MouseButtonPressed:
 				if (m_window->hasFocus())
 					splicingManager.ActivateButton((sf::Mouse::getPosition() - m_window->getPosition()).y + (30 * 15 * currPage), currPage);
@@ -355,11 +343,8 @@ void Editor::RenderSplicing()
 		text.setString(splicingManager.buttons[i].label);
 		text.setPosition(0, (splicingManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);
-
-		if (splicingManager.activeButton == &splicingManager.buttons[i])
-			text.setString(splicingManager.stringifiedNum);
-		else
-			text.setString(*splicingManager.buttons[i].value);
+		
+		text.setString(splicingManager.buttons[i].display);
 
 		text.setPosition(250, (splicingManager.buttons[i].yPos + 1) * 30.0f);
 		m_window->draw(text);

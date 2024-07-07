@@ -1,5 +1,7 @@
 #include "Button.h"
 #include <sstream>
+#include "FileDialoguePrompt.h"
+#include <string>
 
 void ValueEditButton::InitButton(const sf::String& name, int buttonIndex, float* value, float maxN, float minN)
 {
@@ -299,7 +301,6 @@ void SplicingButtonManager::LinkButtons(SplicingSettings& editor)
 {
 	buttons[0].InitButton("SpliceGenome0Path", 0, &editor.splice0Path);
 	buttons[1].InitButton("SpliceGenome1Path", 1, &editor.splice1Path);
-	// buttons[2].InitButton("LoadPath", 0, &editor.loadPath);
 }
 
 void SplicingButtonManager::ActivateButton(int mouseY, int currPage)
@@ -309,26 +310,22 @@ void SplicingButtonManager::ActivateButton(int mouseY, int currPage)
 	selectedRow -= 2;
 	if (selectedRow >= 0 && selectedRow < 3)
 	{
-		stringifiedNum = "";
 		if (buttons[selectedRow].page != currPage)
 			return;
-		activeButton = &buttons[selectedRow];
+		std::string path;
+		OpenFilePath(path, FileSearchFilter{ "Genome File (.genome)", "*.genome" });
+		sf::String sfPath(path);
+		while (sfPath.find("\\") != sf::String::InvalidPos)
+		{
+			int p = sfPath.find("\\");
+			for (int i = 0; i < p + 1; i++)
+			{
+				sfPath[i] = '*';
+			}
+			std::cout << sfPath.toAnsiString() << "\n";
+		}
+		sfPath.replace("*", "");
+		*buttons[selectedRow].value = path;
+		buttons[selectedRow].display = sfPath;
 	}
 };
-
-void SplicingButtonManager::ProcessInput(char key)
-{
-	if (activeButton)
-	{
-		if (key == sf::Keyboard::Enter)
-		{
-			*activeButton->value = stringifiedNum;
-			stringifiedNum = "";
-			activeButton = nullptr;
-
-			return;
-		}
-
-		stringifiedNum += key;
-	}
-}
