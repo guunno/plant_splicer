@@ -19,7 +19,7 @@ int main()
 #if IS_CONVERTING_FILE
 	std::string path;
 	AskUserForPath(path, FileSearchFilter{"Tree Files!", "*.genome"});
-	std::cout << "Converting `" << path << "` " << (FileManager::ConvertFromHeaderless(path) ? "Succeeded" : "Failed") << "!\n";
+	std::cout << "Converting `" << path << "` " << (FileManager::ConvertLegacy(path) ? "Succeeded" : "Failed") << "!\n";
 	return 0;
 #endif
 
