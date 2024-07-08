@@ -50,10 +50,7 @@ void SoloBranchGenomeButtonManager::ActivateButton(int mouseY, int currPage)
 			return;
 		}
 
-		if (buttons[selectedRow].floorToInt)
-			stringifiedNum = std::to_string(*buttons[selectedRow].intVal);
-		else
-			stringifiedNum = floatToString(*buttons[selectedRow].floatVal);
+		stringifiedNum = "";
 
 		activeButton = &buttons[selectedRow];
 	}
