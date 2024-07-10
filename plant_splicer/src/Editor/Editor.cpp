@@ -105,6 +105,12 @@ void Editor::Process()
 						FileManager::CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
 							(uint32_t)std::chrono::system_clock::now().time_since_epoch().count(), branchGenomes);
 					break;
+
+				case sf::Keyboard::M:
+					if (m_Controlling)
+						FileManager::CreateSplicedPlant(splicingSettings.splice0Path, splicingSettings.splice1Path,
+							(uint32_t)std::chrono::system_clock::now().time_since_epoch().count(), branchGenomes, true);
+					break;
 				}
 			}
 		}

@@ -87,7 +87,6 @@ public:
 private:
 	uint32_t InitBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr, bool consecutiveRecusion = false);
 	uint32_t InitEndBranches(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, Branch* parent = nullptr);
-	void ResetIntermediate();
 
 private:
 	uint32_t GetBranchCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, bool consecutiveRecusion = false);

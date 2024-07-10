@@ -319,7 +319,6 @@ void SplicingButtonManager::ActivateButton(int mouseY, int currPage)
 			{
 				sfPath[i] = '*';
 			}
-			std::cout << sfPath.toAnsiString() << "\n";
 		}
 		sfPath.replace("*", "");
 		*buttons[selectedRow].value = path;
