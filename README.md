@@ -1,9 +1,9 @@
 # Plant splicer showcase
 This is a showcase of plants made using plant splicer
 
-(M) - indicates it was spliced with mutation, instead of purely splicing it
-(MD) - indicates it was spliced, and then a gene was manually edited
-(MMD) - indicates it was spliced with mutation, and then a gene was manually edited
+- (M) indicates it was spliced with mutation, instead of purely splicing it
+- (MD) indicates it was spliced, and then a gene was manually edited
+- (MMD) indicates it was spliced with mutation, and then a gene was manually edited
 
 |Name|Image|Splice|
 ---|---|---
