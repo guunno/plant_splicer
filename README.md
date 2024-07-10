@@ -4,7 +4,7 @@ Mix and match plant genetics to create beautiful images!
 # Tips
 - Press the Escape key to go back to the Main Menu
 - The Editor closes with the Main render window
-- In the Editor Window, Press Control+S to save, Control+O to open, and Control+P to splice (splicing requires paths to be provided in editor)
+- In the Editor Window, Press Ctrl+S to save, Ctrl+O to open, Ctrl+P to splice Ctrl + M to splice and mutate (splicing and mutation requires paths to be provided in editor)
 - When splicing, try to use plants that make use of a similar number of genomes
 - Use more genomes
 - Try to avoid negative colour change values, can lead to strange colours when splicing
