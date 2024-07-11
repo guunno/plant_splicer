@@ -124,7 +124,9 @@ void FileManager::ShuffleGenome(BranchGenome gene0, BranchGenome gene1, BranchGe
     SHUFFLE(dirSpread);
     SHUFFLE(spreadMaxDistanceEff);
 
-    SHUFFLE(initColour);
+    SHUFFLE(initColour.r);
+    SHUFFLE(initColour.g);
+    SHUFFLE(initColour.b);
 
     SHUFFLE(initWidth);
     SHUFFLE(length);
@@ -150,7 +152,7 @@ float FileManager::GetRandomFromBases(float max, float min, bool extended, float
     return r * (max - min) + min;
 }
 
-void FileManager::MutateRandomGenome(Buffer<BranchGenome>& out, int genome, BranchGenome parent0, BranchGenome parent1)
+void FileManager::MutateRandomGenome(Buffer<BranchGenome>& out, int genome)
 {
     int gene = rand() % 36; // THIS MUST BE THE NUMBER OF GENOMES
     std::cout << gene << "," << genome << "\n";
@@ -249,7 +251,7 @@ void FileManager::CreateSplicedPlant(const sf::String& string0, const sf::String
         }
     }
 
-    MutateRandomGenome(splicedPlant, genome, plant0[genome], plant1[genome]);
+    MutateRandomGenome(splicedPlant, genome);
 
     bool usedGenomesM[10]{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CheckGenomeReferences(usedGenomesM, 0, splicedPlant, 0);

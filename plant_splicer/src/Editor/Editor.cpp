@@ -85,7 +85,7 @@ void Editor::Process()
 					if (m_Controlling)
 					{
 						std::string path;
-						OpenFilePath(path, FileSearchFilter{"Genome File (.genome)", "*.genome"});
+						OpenFilePath(path, FileSearchFilter{ "Genome File (.genome)", "*.genome" });
 						if (path.size() > 0)
 							FileManager::LoadGenomes(branchGenomes, path);
 					}
