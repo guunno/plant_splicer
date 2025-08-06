@@ -22,6 +22,7 @@ Daisy |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/76f8ab
 Banana |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/06d6efc7-a358-418f-a31c-81e3eea3207f)| Unique
 Fern |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/189d2366-a245-47fc-90b1-93c45c3d0954)| Lily + Banana
 Christmas |![plant](https://github.com/Wurnace/plant_splicer/assets/122387227/db3574f5-d0f7-4562-9e83-9133526de3c7)| (M) Fern + Lily
+Corn | <img width="800" height="800" alt="plant" src="https://github.com/user-attachments/assets/2256c3a4-be38-431d-850c-712650124633" /> | Unique
 
 
 
