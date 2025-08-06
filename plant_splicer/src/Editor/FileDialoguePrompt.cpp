@@ -5,7 +5,7 @@
 
 void OpenFilePath(std::string& text, const FileSearchFilter& filter)
 {
-    std::vector<std::string> fileSelected = pfd::open_file::open_file("Open Plant", "", { filter.name, filter.pattern }).result();
+    std::vector<std::string> fileSelected = pfd::open_file::open_file("Open Plant", "", { filter.name, filter.pattern}).result();
     if (!fileSelected.empty())
         text = fileSelected[0];
 }

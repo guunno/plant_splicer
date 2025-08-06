@@ -9,7 +9,6 @@
 
 #define LERP(a, b, k) a * k + b * (1 - k)
 
-
 struct BranchData
 {
 	int length = 2; // Length of the Branch
@@ -59,7 +58,7 @@ public:
 	Branch() {}
 	Branch(BranchGenome& genomeData, Branch* parentBranch = nullptr);
 	void Create(BranchGenome& genomeData, Branch* parentBranch = nullptr, int gIdx = 0, int chInd = 0);
-	void RenderBranch(const std::unique_ptr<sf::CircleShape>& circle, const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, float zoom = 1, uint32_t recursionDepth = 0, bool conRec = false) const;
+	void RenderBranch(const std::shared_ptr<sf::RenderWindow>& window, const Buffer<Branch>& allBranches, const Branch::Orientation& offset, float zoom = 1, uint32_t recursionDepth = 0, bool conRec = false) const;
 
 public:
 	BranchData data;
@@ -92,7 +91,6 @@ private:
 	uint32_t GetBranchCount(uint32_t genomeIdx = 0, uint8_t recursionDepth = 0, bool consecutiveRecusion = false);
 
 private:
-	std::unique_ptr<sf::CircleShape> m_BranchRenderShape = std::make_unique<sf::CircleShape>();
 	uint32_t m_IntermediateBranchCount = 0;
 	uint32_t m_BranchCount = 0;
 	Buffer<Branch> m_Branches{};

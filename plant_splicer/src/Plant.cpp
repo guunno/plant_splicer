@@ -2,6 +2,7 @@
 
 #define MAX_RECUSION_DEPTH 5
 
+
 Branch::Branch(BranchGenome& genomeData, Branch* parentBranch)
 {
 	Create(genomeData, parentBranch);
@@ -88,36 +89,107 @@ void Branch::Create(BranchGenome& genomeData, Branch* parentBranch, int gIdx, in
 	data.spreadOff += ((genomeData.dirSpread * 1.0f / numOfSiblings * 1.0f) * youngness * 1.0f) - (float)(genomeData.dirSpread / PI);
 }
 
-static void RenderBranchSegment(
-	const std::unique_ptr<sf::CircleShape>& circle,
-	Vector2 position, float width, const FloatColour& colour,
-	const std::shared_ptr<sf::RenderWindow>& window, float zoom = 1
+static void CapBranchSegment(
+	const std::unique_ptr<sf::VertexArray>& light,
+	const std::unique_ptr<sf::VertexArray>& shadow,
+	const std::unique_ptr<sf::VertexArray>& actual,
+	Vector2 position, float width, const FloatColour& colour, float dir,
+	float closemultiple = 1, float zoom = 1
 ) {
-	circle->setRadius(width * zoom);
+	for (int i = 1; i < 5; i++)
+	{
+		float closingrotation = (float(PI) / 2.0) * (i / 4.0) * closemultiple;
+		float r = (width * zoom);
+		Vector2 right = { cos(dir - closingrotation) * r + position.x, sin(dir - closingrotation) * r + position.y };
+		Vector2 left = { cos(dir + float(PI) + closingrotation) * r + position.x, sin(dir + float(PI) + closingrotation) * r + position.y };
+
+		// Light
+		sf::Vertex lrvtx;
+		sf::Vertex llvtx;
+		lrvtx.position = { right.x + cos(dir + float(PI)), right.y + sin(dir + float(PI)) };
+		lrvtx.color = FloatColour{ colour.r + 60, colour.g + 60, colour.b + 60, 10 };
+		llvtx.position = { left.x + cos(dir + float(PI)), left.y + sin(dir + float(PI)) };
+		llvtx.color = lrvtx.color;
+		light->append(llvtx);
+		light->append(lrvtx);
+
+		// Shadow
+		sf::Vertex srvtx;
+		sf::Vertex slvtx;
+		srvtx.position = { right.x + cos(dir), right.y + sin(dir) };
+		srvtx.color = (FloatColour(
+			abs(colour.r - 25) + (colour.r - 25),
+			abs(colour.g - 25) + (colour.g - 25),
+			abs(colour.b - 25) + (colour.b - 25),
+			10
+		));
+		slvtx.position = { left.x + cos(dir), left.y + sin(dir) };
+		slvtx.color = srvtx.color;
+		shadow->append(slvtx);
+		shadow->append(srvtx);
+
+		// Actual
+		sf::Vertex rvtx;
+		sf::Vertex lvtx;
+		rvtx.position = { right.x, right.y };
+		rvtx.color = colour;
+		lvtx.position = { left.x, left.y };
+		lvtx.color = rvtx.color;
+		lvtx.color.a = 10;
+		actual->append(lvtx);
+		actual->append(rvtx);
+	}
+}
+
+static void RenderBranchSegment(
+	const std::unique_ptr<sf::VertexArray>& light,
+	const std::unique_ptr<sf::VertexArray>& shadow,
+	const std::unique_ptr<sf::VertexArray>& actual,
+	Vector2 position, float width, const FloatColour& colour, float dir,
+	float zoom = 1
+) {
+	float r = width * zoom;
+	Vector2 right = { cos(dir) * r + position.x, sin(dir) * r + position.y};
+	Vector2 left = { cos(dir + float(PI)) * r + position.x, sin(dir + float(PI)) * r + position.y };
 
 	// Light
-	circle->setFillColor(FloatColour{ colour.r + 25, colour.g + 25, colour.b + 25, 10 });
-	circle->setPosition({ position.x - 1 - (width * zoom), position.y - 1 - (width * zoom) });
-	window->draw(*circle);
+	sf::Vertex lrvtx;
+	sf::Vertex llvtx;
+	lrvtx.position = { right.x + cos(dir + float(PI)), right.y + sin(dir + float(PI))};
+	lrvtx.color = FloatColour{ colour.r + 60, colour.g + 60, colour.b + 60, 10 };
+	llvtx.position = { left.x + cos(dir + float(PI)), left.y + sin(dir + float(PI)) };
+	llvtx.color = lrvtx.color;
+	light->append(llvtx);
+	light->append(lrvtx);
 
 	// Shadow
-	circle->setFillColor(FloatColour(
+	sf::Vertex srvtx;
+	sf::Vertex slvtx;
+	srvtx.position = { right.x + cos(dir), right.y + sin(dir)};
+	srvtx.color = (FloatColour(
 		abs(colour.r - 25) + (colour.r - 25),
 		abs(colour.g - 25) + (colour.g - 25),
 		abs(colour.b - 25) + (colour.b - 25),
 		10
 	));
-	circle->setPosition({ position.x + 1 - (width * zoom), position.y + 1 - (width * zoom) });
-	window->draw(*circle);
+	slvtx.position = { left.x + cos(dir), left.y + sin(dir)};
+	slvtx.color = srvtx.color;
+	shadow->append(slvtx);
+	shadow->append(srvtx);
 
 	// Actual
-	circle->setFillColor(colour);
-	circle->setPosition({ position.x - (width * zoom), position.y - (width * zoom) });
-	window->draw(*circle);
+	sf::Vertex rvtx;
+	sf::Vertex lvtx;
+	rvtx.position = { right.x, right.y};
+	rvtx.color = colour;
+	lvtx.position = { left.x, left.y };
+	lvtx.color = rvtx.color;
+	lvtx.color.a = 10;
+	actual->append(lvtx);
+	actual->append(rvtx);
 }
 
 void Branch::RenderBranch(
-	const std::unique_ptr<sf::CircleShape>& circle,
 	const std::shared_ptr<sf::RenderWindow>& window,
 	const Buffer<Branch>& allBranches, 
 	const Branch::Orientation& offset = Branch::Orientation(), float zoom,
@@ -133,6 +205,10 @@ void Branch::RenderBranch(
 	colour.g = floor(LERP((trecurs == 0 ? data.colour.g : offset.colour.g), data.colour.g, data.colourAdoption));
 	colour.b = floor(LERP((trecurs == 0 ? data.colour.b : offset.colour.b), data.colour.b, data.colourAdoption));
 
+	std::unique_ptr<sf::VertexArray> light = std::make_unique <sf::VertexArray>(sf::PrimitiveType::TriangleStrip, 0);
+	std::unique_ptr<sf::VertexArray> shadow = std::make_unique <sf::VertexArray>(sf::PrimitiveType::TriangleStrip, 0);
+	std::unique_ptr<sf::VertexArray> actual = std::make_unique <sf::VertexArray>(sf::PrimitiveType::TriangleStrip, 0);
+
 	for (int i = 0; i < data.length; i++)
 	{
 		dir += (data.dirChange + ((((rand() % 201) - 100) / 100.0f) * data.randomTurn)) * ((int)data.isDirPositive * 2 - 1);
@@ -140,14 +216,23 @@ void Branch::RenderBranch(
 		width += data.widthChange * zoom;
 		colour += data.colourChange;
 
-		RenderBranchSegment(circle, pos, width, colour, window, zoom);
+		RenderBranchSegment(light, shadow, actual, pos, width, colour, dir, zoom);
 
 		if (recursionDepth < MAX_RECUSION_DEPTH)
 		{
 			for (int j = 0; j < 6; j++)
 			{
 				if (i == data.branchingPoints[j] && data.branchIndexes[j] >= 0)
-					allBranches[childIndices[j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, zoom, recursionDepth + 1, conRec);
+				{
+					CapBranchSegment(light, shadow, actual, pos, width, colour, dir, 1, zoom);
+					window->draw(*light);
+					window->draw(*shadow);
+					window->draw(*actual);
+					light->clear();
+					shadow->clear();
+					actual->clear();
+					allBranches[childIndices[j]].RenderBranch(window, allBranches, { pos, dir, colour, width }, zoom, recursionDepth + 1, conRec);
+				}
 			}
 		}
 		else if (recursionDepth == MAX_RECUSION_DEPTH)
@@ -155,7 +240,16 @@ void Branch::RenderBranch(
 			for (int j = 0; j < 3; j++)
 			{
 				if (i == data.length - 1 && data.rBranchIndexes[j] >= 0)
-					allBranches[childIndices[6 + j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, zoom, recursionDepth + 1, conRec);
+				{
+					CapBranchSegment(light, shadow, actual, pos, width, colour, dir, 1, zoom);
+					window->draw(*light);
+					window->draw(*shadow);
+					window->draw(*actual);
+					light->clear();
+					shadow->clear();
+					actual->clear();
+					allBranches[childIndices[6 + j]].RenderBranch(window, allBranches, { pos, dir, colour, width }, zoom, recursionDepth + 1, conRec);
+				}
 			}
 
 			if (!conRec)
@@ -163,10 +257,27 @@ void Branch::RenderBranch(
 				for (int j = 0; j < 3; j++)
 				{
 					if (i == data.length - 1 && data.conBranchIndexes[j] >= 0)
-						allBranches[childIndices[9 + j]].RenderBranch(circle, window, allBranches, { pos, dir, colour, width }, zoom, 0, true);
+					{
+						CapBranchSegment(light, shadow, actual, pos, width, colour, dir, 1, zoom);
+						window->draw(*light);
+						window->draw(*shadow);
+						window->draw(*actual);
+						light->clear();
+						shadow->clear();
+						actual->clear();
+						allBranches[childIndices[9 + j]].RenderBranch(window, allBranches, { pos, dir, colour, width }, zoom, 0, true);
+					}
 				}
 			}
 		}
+	}
+
+	if (light->getVertexCount() > 0)
+	{
+		CapBranchSegment(light, shadow, actual, pos, width, colour, dir, 1, zoom);
+		window->draw(*light);
+		window->draw(*shadow);
+		window->draw(*actual);
 	}
 }
 
@@ -187,8 +298,7 @@ Plant::Plant(Vector2 pos, const std::shared_ptr<sf::RenderWindow>& window, uint1
 
 void Plant::Render(float zoom)
 {
-	m_Branches[0].RenderBranch(
-		(m_BranchRenderShape), window, 
+	m_Branches[0].RenderBranch(window, 
 		m_Branches,
 		Branch::Orientation { pos, 0, FloatColour{ 0, 0, 0 } }, zoom
 	);
