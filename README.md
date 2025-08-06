@@ -1,5 +1,5 @@
 # Plant Splicer
-Mix and match plant genetics to create beautiful images!
+Mix and match plant genetics to create cool images!
 
 # Tips
 - Press the Escape key to go back to the Main Menu
